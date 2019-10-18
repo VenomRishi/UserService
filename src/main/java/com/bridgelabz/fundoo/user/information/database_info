@@ -1,0 +1,22 @@
+SHOW DATABASES;
+
+CREATE DATABASE fundoo;
+
+USE fundoo;
+
+CREATE TABLE IF NOT EXISTS user(
+	u_id int NOT NULL AUTO_INCREMENT,
+	u_fname varchar(50) NOT NULL,
+	u_lname varchar(50) NOT NULL,
+	u_email varchar(100) NOT NULL,
+	u_password varchar(50) NOT NULL,
+	u_reg_date DateTime NOT NULL,
+	u_update_date DateTime NOT NULL,
+	PRIMARY KEY(u_id)
+);
+
+SHOW TABLES;
+
+DESC user;
+
+DROP TABLE user;
