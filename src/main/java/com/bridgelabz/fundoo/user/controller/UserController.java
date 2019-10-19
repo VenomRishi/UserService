@@ -15,6 +15,8 @@ package com.bridgelabz.fundoo.user.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bridgelabz.fundoo.user.dto.LoginDTO;
+import com.bridgelabz.fundoo.user.dto.RegisterDTO;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.service.UserService;
 
@@ -31,23 +35,21 @@ public class UserController {
 
 	@Autowired
 	private UserService service;
-	
+
 	@GetMapping("/get")
-	public List<User> getAllUsers(){
+	public List<User> getAllUsers() {
 		return service.getAllUsers();
 	}
 
 	@PostMapping("/login")
-	public boolean login(@RequestBody User user) {
-		String email = user.getEmail();
-		String password = user.getPassword();
-		return service.login(email, password);
+	public ResponseEntity<Boolean> login(@RequestBody LoginDTO loginDTO) {
+		return new ResponseEntity<>(service.login(loginDTO), HttpStatus.OK);
 
 	}
 
 	@PostMapping("/register")
-	public boolean register(@RequestBody User user) {
-		return service.register(user);
+	public ResponseEntity<Boolean> register(@RequestBody RegisterDTO registerDTO) {
+		return new ResponseEntity<>(service.register(registerDTO), HttpStatus.OK);
 	}
 
 	@PostMapping("/fp/{email}")

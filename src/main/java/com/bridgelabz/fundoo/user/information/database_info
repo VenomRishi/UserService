@@ -20,3 +20,5 @@ SHOW TABLES;
 DESC user;
 
 DROP TABLE user;
+
+DELETE FROM user WHERE u_id=3;

@@ -2,18 +2,20 @@ package com.bridgelabz.fundoo.user.service;
 
 import java.util.List;
 
+import com.bridgelabz.fundoo.user.dto.LoginDTO;
+import com.bridgelabz.fundoo.user.dto.RegisterDTO;
 import com.bridgelabz.fundoo.user.model.User;
 
 public interface UserService {
-	
-	boolean login(String email, String password);
-	
+
+	boolean login(LoginDTO loginDTO);
+
 	boolean validateEmail(String email);
 
-	boolean register(User user);
-	
+	boolean register(RegisterDTO registerDTO);
+
 	void forgotPassword(String email);
-	
+
 	void changePassword(String password);
 
 	List<User> getAllUsers();

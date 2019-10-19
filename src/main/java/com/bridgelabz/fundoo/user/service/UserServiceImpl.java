@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoo.user.configuration.UserConfiguration;
+import com.bridgelabz.fundoo.user.dto.LoginDTO;
+import com.bridgelabz.fundoo.user.dto.RegisterDTO;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
 
@@ -19,10 +21,10 @@ public class UserServiceImpl implements UserService {
 	private UserConfiguration config;
 
 	@Override
-	public boolean login(String email, String password) {
+	public boolean login(LoginDTO loginDTO) {
 
-		return userRepository.findAll().stream().anyMatch(
-				i -> i.getEmail().equals(email) && config.passwordEncoder().matches(password, i.getPassword()));
+		return userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(loginDTO.getEmail())
+				&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()));
 	}
 
 	@Override
@@ -31,9 +33,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean register(User user) {
-		if (!validateEmail(user.getEmail())) {
-			user.setPassword(config.passwordEncoder().encode(user.getPassword()));
+	public boolean register(RegisterDTO registerDTO) {
+		if (!validateEmail(registerDTO.getEmail())) {
+			registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
+			User user = config.modelMapper().map(registerDTO, User.class);
 			userRepository.save(user);
 			return true;
 		}
@@ -53,7 +56,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<User> getAllUsers() {
-
 		return userRepository.findAll();
 	}
 
