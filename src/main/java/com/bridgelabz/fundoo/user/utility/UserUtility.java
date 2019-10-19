@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserUtility {
 
-	public SimpleMailMessage sendMail(String email) {
+	public SimpleMailMessage sendMail(String email, String token) {
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setTo(email);
 		simpleMailMessage.setSubject("Setup new Password of UserService Application");
-		simpleMailMessage.setText("Checking mail now");
+		simpleMailMessage.setText("http://localhost:8080/user/setpassword/" + token);
 		return simpleMailMessage;
 	}
 

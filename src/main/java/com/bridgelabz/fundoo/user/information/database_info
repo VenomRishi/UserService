@@ -22,3 +22,5 @@ DESC user;
 DROP TABLE user;
 
 DELETE FROM user WHERE u_id=3;
+
+TRUNCATE TABLE user;

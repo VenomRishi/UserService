@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.user.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,10 @@ import com.bridgelabz.fundoo.user.dto.RegisterDTO;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
 import com.bridgelabz.fundoo.user.utility.UserUtility;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -54,12 +59,26 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void forgotPassword(String email) {
-		SimpleMailMessage sampleMailMessage = userUtility.sendMail(email);
-		javaMailSender.send(sampleMailMessage);
+		// check email is there in database or not
+		if (validateEmail(email)) {
+			// code for sending email to recipient
+			String token = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
+					.signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+			SimpleMailMessage sampleMailMessage = userUtility.sendMail(email, token);
+			javaMailSender.send(sampleMailMessage);
+		} else {
+			
+		}
 	}
 
 	@Override
-	public void changePassword(String password) {
+	public void changePassword(String password, String token) {
+		Claims claims = Jwts.parser().setSigningKey("secretkey").parseClaimsJws(token).getBody();
+		System.out.println(claims.getSubject());
+		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
+				.orElse(null);
+		user.setPassword(config.passwordEncoder().encode(password));
+		userRepository.save(user);
 
 	}
 
