@@ -2,6 +2,11 @@ Postman
 
 Collection Name: UserService
 
+Collection Link: https://www.getpostman.com/collections/12dfc6b57ce88693f57f
+
 Services: 
 login 
 register
+get
+forgotPassword
+setPassword

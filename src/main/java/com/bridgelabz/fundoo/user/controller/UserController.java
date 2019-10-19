@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Purpose: Class is implemented for handling the request from the user
+ *  Purpose: Class is implemented for handling the request coming from the user
  *  		 @RestController defines that it will deal with the rest controller
  *  		 @RequestMapping will handle the request
  *  		 in this class handling request related user
@@ -54,14 +54,14 @@ public class UserController {
 	}
 
 	@PostMapping("/fp")
-	public boolean forgotPassword(@RequestHeader(name = "email") String email) {
+	public boolean forgotPassword(@RequestHeader(name = "email") String email) throws Exception {
 		service.forgotPassword(email);
 		return true;
 	}
 
 	@PutMapping("/setpassword/{apptoken}")
 	public void setPassword(@RequestHeader String password, @PathVariable(name = "apptoken") String token) {
-		service.changePassword(password, token);
+		service.setPassword(password, token);
 	}
 
 }

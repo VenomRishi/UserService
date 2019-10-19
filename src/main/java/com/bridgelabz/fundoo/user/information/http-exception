@@ -1,0 +1,8 @@
+Response Statuses for Errors
+Use appropriate status code based on the error.
+
+404 - RESOURCE NOT FOUND
+400 - BAD REQUEST
+401 - UNAUTHORIZED
+415 - UNSUPPORTED TYPE - Representation not supported for the resource
+500 - SERVER ERROR

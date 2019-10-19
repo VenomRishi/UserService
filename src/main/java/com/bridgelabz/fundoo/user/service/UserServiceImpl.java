@@ -1,3 +1,15 @@
+/******************************************************************************
+ *  Purpose: This is class of User Service class in the @Service it handles
+ *  		 all the request coming from controller and which is then process
+ *  		 in service class as it is class so there is only definition of
+ *  		 method which is declare in interface UserService
+ *
+ *  @author  Rishikesh Mhatre
+ *  @version 1.0
+ *  @since   18-10-2019
+ *
+ ******************************************************************************/
+
 package com.bridgelabz.fundoo.user.service;
 
 import java.util.Date;
@@ -10,6 +22,7 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoo.user.configuration.UserConfiguration;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
+import com.bridgelabz.fundoo.user.exception.UserException;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
 import com.bridgelabz.fundoo.user.utility.UserUtility;
@@ -33,6 +46,16 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserUtility userUtility;
 
+	/**
+	 * Purpose: method for login the user into the system
+	 * 
+	 * @param loginDTO this is object of RegisterDTO class which is passed from
+	 *                 controller this object is holding all the information which
+	 *                 is coming from the user end
+	 * 
+	 * @return returns true if user get login into the system successfully else
+	 *         returns false
+	 */
 	@Override
 	public boolean login(LoginDTO loginDTO) {
 
@@ -40,11 +63,27 @@ public class UserServiceImpl implements UserService {
 				&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()));
 	}
 
+	/**
+	 * Purpose: method for checking the email is there in database or not
+	 * 
+	 * @param input from program
+	 * 
+	 * @return true if email is found in database or else return false
+	 */
 	@Override
 	public boolean validateEmail(String email) {
 		return userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(email));
 	}
 
+	/**
+	 * Purpose: method for registration of new user
+	 * 
+	 * @param registerDTO this is object of RegisterDTO class which is passed from
+	 *                    controller this object is holding all the information
+	 *                    which is coming from the user end
+	 * @return returns true if user register successfully else application will
+	 *         throw the exception
+	 */
 	@Override
 	public boolean register(RegisterDTO registerDTO) {
 		if (!validateEmail(registerDTO.getEmail())) {
@@ -52,11 +91,20 @@ public class UserServiceImpl implements UserService {
 			User user = config.modelMapper().map(registerDTO, User.class);
 			userRepository.save(user);
 			return true;
+		} else {
+			throw new UserException(registerDTO.getEmail()
+					+ " found record with this email cannot able to create new entry with this email");
+
 		}
 
-		return false;
 	}
 
+	/**
+	 * Purpose: method is created for the sending the set password link on email if
+	 * user forgets there password
+	 * 
+	 * @param email email id receives from the use from user response
+	 */
 	@Override
 	public void forgotPassword(String email) {
 		// check email is there in database or not
@@ -67,12 +115,18 @@ public class UserServiceImpl implements UserService {
 			SimpleMailMessage sampleMailMessage = userUtility.sendMail(email, token);
 			javaMailSender.send(sampleMailMessage);
 		} else {
-			
+			throw new UserException(email + " not found is database");
 		}
 	}
 
+	/**
+	 * Purpose: method is created for changing the password of current user
+	 * 
+	 * @param password input from user
+	 * @param token    input from user url(uniform resource locator)
+	 */
 	@Override
-	public void changePassword(String password, String token) {
+	public void setPassword(String password, String token) {
 		Claims claims = Jwts.parser().setSigningKey("secretkey").parseClaimsJws(token).getBody();
 		System.out.println(claims.getSubject());
 		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
