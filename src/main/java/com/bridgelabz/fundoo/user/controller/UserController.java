@@ -12,6 +12,8 @@
 
 package com.bridgelabz.fundoo.user.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +31,11 @@ public class UserController {
 
 	@Autowired
 	private UserService service;
+	
+	@GetMapping("/get")
+	public List<User> getAllUsers(){
+		return service.getAllUsers();
+	}
 
 	@PostMapping("/login")
 	public boolean login(@RequestBody User user) {
@@ -43,7 +50,7 @@ public class UserController {
 		return service.register(user);
 	}
 
-	@GetMapping("/fp/{email}")
+	@PostMapping("/fp/{email}")
 	public boolean forgotPassword(@PathVariable(name = "email") String email) {
 		service.forgotPassword(email);
 		return true;

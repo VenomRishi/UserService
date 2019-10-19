@@ -1,5 +1,7 @@
 package com.bridgelabz.fundoo.user.service;
 
+import java.util.List;
+
 import com.bridgelabz.fundoo.user.model.User;
 
 public interface UserService {
@@ -13,5 +15,7 @@ public interface UserService {
 	void forgotPassword(String email);
 	
 	void changePassword(String password);
+
+	List<User> getAllUsers();
 
 }

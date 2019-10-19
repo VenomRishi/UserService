@@ -1,3 +1,7 @@
 Postman
 
 Collection Name: UserService
+
+Services: 
+login 
+register
