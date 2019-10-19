@@ -10,7 +10,6 @@
 
 package com.bridgelabz.fundoo.user.model;
 
-
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -24,6 +23,7 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 
 @Entity
 @Table(name = "user")
@@ -54,6 +54,9 @@ public class User {
 	@Temporal(TemporalType.TIMESTAMP)
 	@UpdateTimestamp
 	private Date updateDate;
+
+	@Column(name = "u_active", columnDefinition = "boolean default false")
+	private boolean isActive;
 
 	public Integer getUid() {
 		return uid;
@@ -109,6 +112,14 @@ public class User {
 
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 
 	@Override

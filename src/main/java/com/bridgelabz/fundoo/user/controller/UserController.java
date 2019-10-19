@@ -42,15 +42,20 @@ public class UserController {
 		return service.getAllUsers();
 	}
 
+	@PostMapping("/register")
+	public ResponseEntity<Boolean> register(@RequestBody RegisterDTO registerDTO) {
+		return new ResponseEntity<>(service.register(registerDTO), HttpStatus.OK);
+	}
+	
+	@GetMapping("/verify/{apptoken}")
+	public String verify(@PathVariable String token) {
+		return service.verify(token);
+	}
+
 	@PutMapping("/login")
 	public ResponseEntity<Boolean> login(@RequestBody LoginDTO loginDTO) {
 		return new ResponseEntity<>(service.login(loginDTO), HttpStatus.OK);
 
-	}
-
-	@PostMapping("/register")
-	public ResponseEntity<Boolean> register(@RequestBody RegisterDTO registerDTO) {
-		return new ResponseEntity<>(service.register(registerDTO), HttpStatus.OK);
 	}
 
 	@PostMapping("/fp")

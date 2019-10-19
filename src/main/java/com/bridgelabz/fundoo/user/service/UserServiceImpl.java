@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public boolean login(LoginDTO loginDTO) {
-
+		System.out.println(userRepository.findById(1) != null);
 		return userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(loginDTO.getEmail())
 				&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()));
 	}
@@ -70,10 +70,11 @@ public class UserServiceImpl implements UserService {
 	 * 
 	 * @return true if email is found in database or else return false
 	 */
-	@Override
-	public boolean validateEmail(String email) {
-		return userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(email));
-	}
+	// @Override
+	// public boolean validateEmail(String email) {
+	// return userRepository.findAll().stream().anyMatch(i ->
+	// i.getEmail().equals(email));
+	// }
 
 	/**
 	 * Purpose: method for registration of new user
@@ -86,7 +87,8 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public boolean register(RegisterDTO registerDTO) {
-		if (!validateEmail(registerDTO.getEmail())) {
+		if (userRepository.findByEmail(registerDTO.getEmail()) == null) {
+			registerVerificationSendEmail(registerDTO.getEmail());
 			registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
 			User user = config.modelMapper().map(registerDTO, User.class);
 			userRepository.save(user);
@@ -100,6 +102,24 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
+	 * Purpose: method is created for sending the email for activating the user
+	 * account user only login to account only if user account is activated if the
+	 * user wants to activate the account then he/she has to verify the email
+	 * verification link
+	 * 
+	 * @param email from where the user wants to send email this parameter comes
+	 *              from the user registration form
+	 */
+	@Override
+	public void registerVerificationSendEmail(String email) {
+		// code for sending email to recipient
+		String token = Jwts.builder().setSubject(email).setIssuedAt(new Date())
+				.signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+		SimpleMailMessage sampleMailMessage = userUtility.sendMailForRegistrationVerification(email, token);
+		javaMailSender.send(sampleMailMessage);
+	}
+
+	/**
 	 * Purpose: method is created for the sending the set password link on email if
 	 * user forgets there password
 	 * 
@@ -108,9 +128,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void forgotPassword(String email) {
 		// check email is there in database or not
-		if (validateEmail(email)) {
+		if (userRepository.findByEmail(email) != null) {
 			// code for sending email to recipient
-			String token = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
+			String token = Jwts.builder().setSubject(email).setIssuedAt(new Date())
 					.signWith(SignatureAlgorithm.HS256, "secretkey").compact();
 			SimpleMailMessage sampleMailMessage = userUtility.sendMail(email, token);
 			javaMailSender.send(sampleMailMessage);
@@ -131,14 +151,25 @@ public class UserServiceImpl implements UserService {
 		System.out.println(claims.getSubject());
 		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
 				.orElse(null);
-		user.setPassword(config.passwordEncoder().encode(password));
-		userRepository.save(user);
+		if (user != null) {
+			user.setPassword(config.passwordEncoder().encode(password));
+			userRepository.save(user);
+		} else {
+			// not saved
+			
+		}
 
 	}
 
 	@Override
 	public List<User> getAllUsers() {
 		return userRepository.findAll();
+	}
+
+	@Override
+	public String verify(String token) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

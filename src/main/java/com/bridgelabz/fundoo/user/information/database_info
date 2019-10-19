@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS user(
 	u_password varchar(255) NOT NULL,
 	u_reg_date DateTime NOT NULL,
 	u_update_date DateTime NOT NULL,
+	u_active bool NOT NULL DEFAULT FALSE,
 	PRIMARY KEY(u_id)
 );
 
@@ -24,3 +25,5 @@ DROP TABLE user;
 DELETE FROM user WHERE u_id=3;
 
 TRUNCATE TABLE user;
+
+ALTER TABLE user ADD u_active bool NOT NULL DEFAULT FALSE;

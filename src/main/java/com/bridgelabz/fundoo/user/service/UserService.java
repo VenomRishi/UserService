@@ -38,7 +38,7 @@ public interface UserService {
 	 * 
 	 * @return true if email is found in database or else return false
 	 */
-	boolean validateEmail(String email);
+//	boolean validateEmail(String email);
 
 	/**
 	 * Purpose: method for registration of new user
@@ -50,6 +50,17 @@ public interface UserService {
 	 *         throw the exception
 	 */
 	boolean register(RegisterDTO registerDTO);
+
+	/**
+	 * Purpose: method is created for sending the email for activating the user
+	 * account user only login to account only if user account is activated if the
+	 * user wants to activate the account then he/she has to verify the email
+	 * verification link
+	 * 
+	 * @param email from where the user wants to send email this parameter comes
+	 *              from the user registration form
+	 */
+	public void registerVerificationSendEmail(String email);
 
 	/**
 	 * Purpose: method is created for the sending the set password link on email if
@@ -68,5 +79,11 @@ public interface UserService {
 	void setPassword(String password, String token);
 
 	List<User> getAllUsers();
+
+	/**
+	 * @param token
+	 * @return
+	 */
+	String verify(String token);
 
 }
