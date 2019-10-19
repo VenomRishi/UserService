@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
 import com.bridgelabz.fundoo.user.model.User;
@@ -52,7 +51,7 @@ public class UserController {
 		return new ResponseEntity<>(service.register(registerDTO), HttpStatus.OK);
 	}
 
-	@PostMapping("/fp/{email}")
+	@GetMapping("/fp/{email}")
 	public boolean forgotPassword(@PathVariable(name = "email") String email) {
 		service.forgotPassword(email);
 		return true;

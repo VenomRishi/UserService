@@ -3,13 +3,15 @@ package com.bridgelabz.fundoo.user.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
 import com.bridgelabz.fundoo.user.configuration.UserConfiguration;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
+import com.bridgelabz.fundoo.user.utility.UserUtility;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -19,6 +21,12 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserConfiguration config;
+
+	@Autowired
+	private JavaMailSender javaMailSender;
+
+	@Autowired
+	private UserUtility userUtility;
 
 	@Override
 	public boolean login(LoginDTO loginDTO) {
@@ -46,7 +54,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void forgotPassword(String email) {
-
+		SimpleMailMessage sampleMailMessage = userUtility.sendMail(email);
+		javaMailSender.send(sampleMailMessage);
 	}
 
 	@Override
