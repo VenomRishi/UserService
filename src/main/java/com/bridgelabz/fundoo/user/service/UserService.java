@@ -81,8 +81,18 @@ public interface UserService {
 	List<User> getAllUsers();
 
 	/**
-	 * @param token
-	 * @return
+	 * Purpose: method for verification account when new user register themselve
+	 * then the system generated mail is send to that particular user and when user
+	 * goes to that mail and click the verification link then user account gets
+	 * activated when user account is activated user is getting authorized to use
+	 * there application then user can easy login with there email account with the
+	 * password along with it
+	 * 
+	 * @param token this is token coming from the mail which is send while
+	 *              registration to user mail account in that mail token is
+	 *              available
+	 * @return if user successfully verify the link then it will return the success
+	 *         message else return failure messages
 	 */
 	String verify(String token);
 

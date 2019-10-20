@@ -47,7 +47,7 @@ public class UserUtility {
 	public SimpleMailMessage sendMailForRegistrationVerification(String email, String token) {
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setTo(email);
-		simpleMailMessage.setSubject("Setup new Password of UserService Application");
+		simpleMailMessage.setSubject("Verify your email in UserService Application");
 		simpleMailMessage.setText("http://localhost:8080/user/verify/" + token);
 		return simpleMailMessage;
 	}

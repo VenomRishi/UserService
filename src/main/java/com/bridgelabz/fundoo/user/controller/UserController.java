@@ -48,7 +48,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/verify/{apptoken}")
-	public String verify(@PathVariable String token) {
+	public String verify(@PathVariable(name = "apptoken") String token) {
 		return service.verify(token);
 	}
 

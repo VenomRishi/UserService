@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 	public boolean login(LoginDTO loginDTO) {
 		System.out.println(userRepository.findById(1) != null);
 		return userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(loginDTO.getEmail())
-				&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()));
+				&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()) && i.isActive());
 	}
 
 	/**
@@ -87,7 +87,8 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public boolean register(RegisterDTO registerDTO) {
-		if (userRepository.findByEmail(registerDTO.getEmail()) == null) {
+		// System.out.println(userRepository.findByEmail(registerDTO.getEmail()));
+		if (userRepository.findByEmail(registerDTO.getEmail()).isEmpty()) {
 			registerVerificationSendEmail(registerDTO.getEmail());
 			registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
 			User user = config.modelMapper().map(registerDTO, User.class);
@@ -114,9 +115,37 @@ public class UserServiceImpl implements UserService {
 	public void registerVerificationSendEmail(String email) {
 		// code for sending email to recipient
 		String token = Jwts.builder().setSubject(email).setIssuedAt(new Date())
-				.signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+				.signWith(SignatureAlgorithm.HS256, "verifykey").compact();
 		SimpleMailMessage sampleMailMessage = userUtility.sendMailForRegistrationVerification(email, token);
 		javaMailSender.send(sampleMailMessage);
+	}
+
+	/**
+	 * Purpose: method for verification account when new user register themselve
+	 * then the system generated mail is send to that particular user and when user
+	 * goes to that mail and click the verification link then user account gets
+	 * activated when user account is activated user is getting authorized to use
+	 * there application then user can easy login with there email account with the
+	 * password along with it
+	 * 
+	 * @param token this is token coming from the mail which is send while
+	 *              registration to user mail account in that mail token is
+	 *              available
+	 * @return if user successfully verify the link then it will return the success
+	 *         message else return failure messages
+	 */
+	@Override
+	public String verify(String token) {
+		Claims claims = Jwts.parser().setSigningKey("verifykey").parseClaimsJws(token).getBody();
+		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
+				.orElse(null);
+		if (user != null) {
+			user.setActive(true);
+			userRepository.save(user);
+			return "User verification successful";
+		} else
+			return "failed to verify account";
+
 	}
 
 	/**
@@ -156,7 +185,7 @@ public class UserServiceImpl implements UserService {
 			userRepository.save(user);
 		} else {
 			// not saved
-			
+
 		}
 
 	}
@@ -164,12 +193,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<User> getAllUsers() {
 		return userRepository.findAll();
-	}
-
-	@Override
-	public String verify(String token) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
