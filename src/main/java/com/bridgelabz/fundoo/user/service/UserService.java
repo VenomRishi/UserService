@@ -12,8 +12,6 @@
 
 package com.bridgelabz.fundoo.user.service;
 
-import java.util.List;
-
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
 import com.bridgelabz.fundoo.user.model.User;
@@ -29,7 +27,7 @@ public interface UserService {
 	 * @return returns true if user get login into the system successfully else
 	 *         returns false
 	 */
-	boolean login(LoginDTO loginDTO);
+	String login(LoginDTO loginDTO);
 
 	/**
 	 * Purpose: method for checking the email is there in database or not
@@ -49,7 +47,7 @@ public interface UserService {
 	 * @return returns true if user register successfully else application will
 	 *         throw the exception
 	 */
-	boolean register(RegisterDTO registerDTO);
+	User register(RegisterDTO registerDTO);
 
 	/**
 	 * Purpose: method is created for sending the email for activating the user
@@ -67,18 +65,21 @@ public interface UserService {
 	 * user forgets there password
 	 * 
 	 * @param email email id receives from the use from user response
+	 * 
+	 * @return returns the string saying that email send for forgot password link
 	 */
-	void forgotPassword(String email);
+	String forgotPassword(String email);
 
 	/**
 	 * Purpose: method is created for changing the password of current user
 	 * 
 	 * @param password input from user
 	 * @param token    input from user url
+	 * 
+	 * @return returns the user object which is updated
 	 */
-	void setPassword(String password, String token);
+	User setPassword(String password, String token);
 
-	List<User> getAllUsers();
 
 	/**
 	 * Purpose: method for verification account when new user register themselve
@@ -91,9 +92,9 @@ public interface UserService {
 	 * @param token this is token coming from the mail which is send while
 	 *              registration to user mail account in that mail token is
 	 *              available
-	 * @return if user successfully verify the link then it will return the success
-	 *         message else return failure messages
+	 * @return if user successfully verify the link then it will return the user
+	 *         back else application will throw the exception failed to verify email
 	 */
-	String verify(String token);
+	User verify(String token);
 
 }
