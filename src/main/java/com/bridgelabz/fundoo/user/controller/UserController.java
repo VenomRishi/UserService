@@ -12,6 +12,8 @@
 
 package com.bridgelabz.fundoo.user.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,8 @@ public class UserController {
 	@Autowired
 	private UserService service;
 
+	private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+
 	/**
 	 * Purpose: this API(application programming interface) is created for
 	 * registering new user into system
@@ -48,6 +52,7 @@ public class UserController {
 	 */
 	@PostMapping("/register")
 	public ResponseEntity<User> register(@RequestBody RegisterDTO registerDTO) {
+		LOG.info("register API");
 		return new ResponseEntity<>(service.register(registerDTO), HttpStatus.OK);
 	}
 
@@ -68,6 +73,7 @@ public class UserController {
 	 */
 	@PutMapping("/verify/{apptoken}")
 	public ResponseEntity<User> verify(@PathVariable(name = "apptoken") String token) {
+		LOG.info("verify registration API");
 		return new ResponseEntity<>(service.verify(token), HttpStatus.OK);
 	}
 
@@ -86,6 +92,7 @@ public class UserController {
 	 */
 	@PutMapping("/login")
 	public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
+		LOG.info("login API");
 		return new ResponseEntity<>(service.login(loginDTO), HttpStatus.OK);
 
 	}
@@ -106,6 +113,7 @@ public class UserController {
 	 */
 	@PostMapping("/forgetpassword")
 	public ResponseEntity<String> forgotPassword(@RequestHeader(name = "email") String email) throws Exception {
+		LOG.info("forgot password API");
 		return new ResponseEntity<>(service.forgotPassword(email), HttpStatus.OK);
 	}
 
@@ -128,6 +136,7 @@ public class UserController {
 	@PutMapping("/setpassword/{apptoken}")
 	public ResponseEntity<User> setPassword(@RequestHeader String password,
 			@PathVariable(name = "apptoken") String token) {
+		LOG.info("reset password API");
 		return new ResponseEntity<User>(service.setPassword(password, token), HttpStatus.OK);
 	}
 
