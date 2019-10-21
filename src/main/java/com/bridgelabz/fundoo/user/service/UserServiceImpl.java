@@ -14,10 +14,10 @@ package com.bridgelabz.fundoo.user.service;
 
 import java.util.Date;
 
-import org.modelmapper.spi.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,10 +25,14 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoo.user.configuration.UserConfiguration;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
-import com.bridgelabz.fundoo.user.exception.DefaultExceptionHandling;
-import com.bridgelabz.fundoo.user.exception.UserException;
+import com.bridgelabz.fundoo.user.exception.custom.ForgotPasswordException;
+import com.bridgelabz.fundoo.user.exception.custom.LoginException;
+import com.bridgelabz.fundoo.user.exception.custom.RegisterException;
+import com.bridgelabz.fundoo.user.exception.custom.RegisterVerifyException;
+import com.bridgelabz.fundoo.user.exception.custom.SetPasswordException;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
+import com.bridgelabz.fundoo.user.response.Response;
 import com.bridgelabz.fundoo.user.utility.UserUtility;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -58,32 +62,24 @@ public class UserServiceImpl implements UserService {
 	 *                 controller this object is holding all the information which
 	 *                 is coming from the user end
 	 * 
-	 * @return returns true if user get login into the system successfully else
-	 *         returns false
+	 * @return returns ResponseEntity<Response> which contains the response of the
+	 *         method
 	 */
 	@Override
-	public String login(LoginDTO loginDTO) {
+	public ResponseEntity<Response> login(LoginDTO loginDTO) {
 		LOG.info("method: login service");
-		try {
-			System.out.println(userRepository.findById(1) != null);
-			if (userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(loginDTO.getEmail())
-					&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()) && i.isActive())) {
-				LOG.info("login successful");
-				return "Login successful";
 
-			}
+		if (userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(loginDTO.getEmail())
+				&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()) && i.isActive())) {
+			LOG.info("login successful");
+			return new ResponseEntity<>(new Response(200, "Login successful", true), HttpStatus.OK);
 
-			else {
-				LOG.error("Something went wrong");
-				throw new UserException("Something went wrong");
+		}
 
-			}
+		else {
+			LOG.error("Invalid username and password and/or account is not active");
+			throw new LoginException("Invalid username and password and/or account is not active");
 
-		} catch (Exception ex) {
-
-			ResponseEntity<ErrorMessage> msg = new DefaultExceptionHandling().somethingWentWrong(ex);
-			LOG.error(msg.toString());
-			throw new UserException(msg.toString());
 		}
 
 	}
@@ -107,32 +103,28 @@ public class UserServiceImpl implements UserService {
 	 * @param registerDTO this is object of RegisterDTO class which is passed from
 	 *                    controller this object is holding all the information
 	 *                    which is coming from the user end
-	 * @return returns true if user register successfully else application will
-	 *         throw the exception
+	 * @return returns ResponseEntity<Response> which contains the response of the
+	 *         method
 	 */
 	@Override
-	public User register(RegisterDTO registerDTO) {
-		try {
-			LOG.info("method: register service");
-			// System.out.println(userRepository.findByEmail(registerDTO.getEmail()));
-			if (userRepository.findByEmail(registerDTO.getEmail()).isEmpty()) {
-				registerVerificationSendEmail(registerDTO.getEmail());
-				registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
-				User user = config.modelMapper().map(registerDTO, User.class);
-				LOG.info("registration successful");
-				return userRepository.save(user);
+	public ResponseEntity<Response> register(RegisterDTO registerDTO) {
 
-			} else {
-				LOG.error(registerDTO.getEmail()
-						+ " found record with this email cannot able to create new entry with this email");
-				throw new UserException(registerDTO.getEmail()
-						+ " found record with this email cannot able to create new entry with this email");
+		LOG.info("method: register service");
+		// System.out.println(userRepository.findByEmail(registerDTO.getEmail()));
+		if (userRepository.findByEmail(registerDTO.getEmail()).isEmpty()) {
+			registerVerificationSendEmail(registerDTO.getEmail());
+			registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
+			User user = config.modelMapper().map(registerDTO, User.class);
+			LOG.info("registration successful");
+			return new ResponseEntity<>(new Response(200, "registration successful", userRepository.save(user)),
+					HttpStatus.OK);
 
-			}
-		} catch (Exception ex) {
-			ResponseEntity<ErrorMessage> msg = new DefaultExceptionHandling().somethingWentWrong(ex);
-			LOG.error(msg.toString());
-			throw new UserException(msg.toString());
+		} else {
+			LOG.error(registerDTO.getEmail()
+					+ " found record with this email cannot able to create new entry with this email");
+			throw new RegisterException(registerDTO.getEmail()
+					+ " found record with this email cannot able to create new entry with this email");
+
 		}
 
 	}
@@ -149,18 +141,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void registerVerificationSendEmail(String email) {
 		LOG.info("method: register verification sending email");
-		try {
-			// code for sending email to recipient
-			String token = Jwts.builder().setSubject(email).setIssuedAt(new Date())
-					.signWith(SignatureAlgorithm.HS256, "verifykey").compact();
-			SimpleMailMessage sampleMailMessage = userUtility.sendMailForRegistrationVerification(email, token);
-			javaMailSender.send(sampleMailMessage);
-			LOG.info("email is send to recipient");
-		} catch (Exception ex) {
-			ResponseEntity<ErrorMessage> msg = new DefaultExceptionHandling().somethingWentWrong(ex);
-			LOG.error(msg.toString());
-			throw new UserException(msg.toString());
-		}
+
+		// code for sending email to recipient
+		String token = Jwts.builder().setSubject(email).setIssuedAt(new Date())
+				.signWith(SignatureAlgorithm.HS256, "verifykey").compact();
+		SimpleMailMessage sampleMailMessage = userUtility.sendMailForRegistrationVerification(email, token);
+		javaMailSender.send(sampleMailMessage);
+		LOG.info("email is send to recipient");
+
 	}
 
 	/**
@@ -174,30 +162,25 @@ public class UserServiceImpl implements UserService {
 	 * @param token this is token coming from the mail which is send while
 	 *              registration to user mail account in that mail token is
 	 *              available
-	 * @return if user successfully verify the link then it will return the user
-	 *         back else application will throw the exception failed to verify email
+	 * @return returns ResponseEntity<Response> which contains the response of the
+	 *         method
 	 */
 	@Override
-	public User verify(String token) {
+	public ResponseEntity<Response> verify(String token) {
 		LOG.info("method: verify service");
-		try {
-			Claims claims = Jwts.parser().setSigningKey("verifykey").parseClaimsJws(token).getBody();
-			User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject()))
-					.findAny().orElse(null);
-			if (user != null) {
-				user.setActive(true);
-				LOG.info("user updated");
-				return userRepository.save(user);
 
-			} else {
-				LOG.error("failed to verify..!");
-				throw new UserException("failed to verify..!");
-			}
+		Claims claims = Jwts.parser().setSigningKey("verifykey").parseClaimsJws(token).getBody();
+		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
+				.orElse(null);
+		if (user != null) {
+			user.setActive(true);
+			LOG.info("user updated");
+			return new ResponseEntity<>(
+					new Response(200, "User updated and verify successful", userRepository.save(user)), HttpStatus.OK);
 
-		} catch (Exception ex) {
-			ResponseEntity<ErrorMessage> msg = new DefaultExceptionHandling().somethingWentWrong(ex);
-			LOG.error(msg.toString());
-			throw new UserException(msg.toString());
+		} else {
+			LOG.error("failed to verify..!");
+			throw new RegisterVerifyException("failed to verify..!");
 		}
 
 	}
@@ -208,31 +191,30 @@ public class UserServiceImpl implements UserService {
 	 * 
 	 * @param email email id receives from the use from user response
 	 * 
-	 * @return returns the string saying that email send for forgot password link
+	 * @return returns ResponseEntity<Response> which contains the response of the
+	 *         method
 	 */
 	@Override
-	public String forgotPassword(String email) {
+	public ResponseEntity<Response> forgotPassword(String email) {
 		LOG.info("method: forgot password service");
-		try {
-			// check email is there in database or not
-			if (userRepository.findByEmail(email) != null) {
-				// code for sending email to recipient
-				String token = Jwts.builder().setSubject(email).setIssuedAt(new Date())
-						.signWith(SignatureAlgorithm.HS256, "secretkey").compact();
-				SimpleMailMessage sampleMailMessage = userUtility.sendMail(email, token);
-				javaMailSender.send(sampleMailMessage);
-				LOG.info("Email is send for forget password click on link to send new password");
-				return "Email is send for forget password click on link to send new password";
-			} else {
-				LOG.info(email + " not found is database");
-				throw new UserException(email + " not found is database");
-			}
 
-		} catch (Exception ex) {
-			ResponseEntity<ErrorMessage> msg = new DefaultExceptionHandling().somethingWentWrong(ex);
-			LOG.error(msg.toString());
-			throw new UserException(msg.toString());
+		// check email is there in database or not
+		if (userRepository.findByEmail(email) != null) {
+			// code for sending email to recipient
+			String token = Jwts.builder().setSubject(email).setIssuedAt(new Date())
+					.signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+			SimpleMailMessage sampleMailMessage = userUtility.sendMail(email, token);
+			javaMailSender.send(sampleMailMessage);
+			LOG.info("Email is send for forget password click on link to send new password");
+
+			return new ResponseEntity<>(
+					new Response(200, "Email is send for forget password click on link to send new password", null),
+					HttpStatus.OK);
+		} else {
+			LOG.info(email + " not found is database");
+			throw new ForgotPasswordException(email + " not found is database");
 		}
+
 	}
 
 	/**
@@ -241,30 +223,28 @@ public class UserServiceImpl implements UserService {
 	 * @param password input from user
 	 * @param token    input from user URL(unified resource locator)
 	 * 
-	 * @return returns the user object which is updated
+	 * @return returns ResponseEntity<Response> which contains the response of the
+	 *         method
 	 */
 	@Override
-	public User setPassword(String password, String token) {
+	public ResponseEntity<Response> setPassword(String password, String token) {
 		LOG.info("method: set password service");
-		try {
-			Claims claims = Jwts.parser().setSigningKey("secretkey").parseClaimsJws(token).getBody();
-			LOG.info(claims.getSubject());
-			User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject()))
-					.findAny().orElse(null);
-			if (user != null) {
-				user.setPassword(config.passwordEncoder().encode(password));
-				LOG.info("user updated");
-				return userRepository.save(user);
-			} else {
-				LOG.error("unable to set new password due to there's not email associated with your token");
-				throw new UserException(
-						"unable to set new password due to there's not email associated with your token");
-			}
 
-		} catch (Exception ex) {
-			ResponseEntity<ErrorMessage> msg = new DefaultExceptionHandling().somethingWentWrong(ex);
-			LOG.error(msg.toString());
-			throw new UserException(msg.toString());
+		Claims claims = Jwts.parser().setSigningKey("secretkey").parseClaimsJws(token).getBody();
+		LOG.info(claims.getSubject());
+		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
+				.orElse(null);
+		if (user != null) {
+			user.setPassword(config.passwordEncoder().encode(password));
+			LOG.info("User updated and password set successful");
+			return new ResponseEntity<>(
+					new Response(200, "User updated and password set successful", userRepository.save(user)),
+					HttpStatus.OK);
+
+		} else {
+			LOG.error("unable to set new password due to there's not email associated with your token");
+			throw new SetPasswordException(
+					"unable to set new password due to there's not email associated with your token");
 		}
 
 	}

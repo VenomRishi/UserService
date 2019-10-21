@@ -20,6 +20,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -31,28 +32,35 @@ public class User {
 	@Id
 	@Column(name = "u_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@NotNull
 	private Integer uid;
 
 	@Column(name = "u_fname")
+	@NotNull
 	private String fname;
 
 	@Column(name = "u_lname")
+	@NotNull
 	private String lname;
 
 	@Column(name = "u_email")
+	@NotNull
 	private String email;
 
 	@Column(name = "u_password")
+	@NotNull
 	private String password;
 
 	@Column(name = "u_reg_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	@CreationTimestamp
+	@NotNull
 	private Date regDate;
 
 	@Column(name = "u_update_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	@UpdateTimestamp
+	@NotNull
 	private Date updateDate;
 
 	@Column(name = "u_active", columnDefinition = "boolean default false")

@@ -12,9 +12,11 @@
 
 package com.bridgelabz.fundoo.user.service;
 
+import org.springframework.http.ResponseEntity;
+
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
-import com.bridgelabz.fundoo.user.model.User;
+import com.bridgelabz.fundoo.user.response.Response;
 
 public interface UserService {
 	/**
@@ -24,10 +26,10 @@ public interface UserService {
 	 *                 controller this object is holding all the information which
 	 *                 is coming from the user end
 	 * 
-	 * @return returns true if user get login into the system successfully else
-	 *         returns false
+	 * @return returns ResponseEntity<Response> which contains the response of the
+	 *         method
 	 */
-	String login(LoginDTO loginDTO);
+	ResponseEntity<Response> login(LoginDTO loginDTO);
 
 	/**
 	 * Purpose: method for checking the email is there in database or not
@@ -44,10 +46,10 @@ public interface UserService {
 	 * @param registerDTO this is object of RegisterDTO class which is passed from
 	 *                    controller this object is holding all the information
 	 *                    which is coming from the user end
-	 * @return returns true if user register successfully else application will
-	 *         throw the exception
+	 * @return returns ResponseEntity<Response> which contains the response of the
+	 *         method
 	 */
-	User register(RegisterDTO registerDTO);
+	ResponseEntity<Response> register(RegisterDTO registerDTO);
 
 	/**
 	 * Purpose: method is created for sending the email for activating the user
@@ -57,32 +59,12 @@ public interface UserService {
 	 * 
 	 * @param email from where the user wants to send email this parameter comes
 	 *              from the user registration form
+	 * 
 	 */
-	public void registerVerificationSendEmail(String email);
+	void registerVerificationSendEmail(String email);
 
 	/**
-	 * Purpose: method is created for the sending the set password link on email if
-	 * user forgets there password
-	 * 
-	 * @param email email id receives from the use from user response
-	 * 
-	 * @return returns the string saying that email send for forgot password link
-	 */
-	String forgotPassword(String email);
-
-	/**
-	 * Purpose: method is created for changing the password of current user
-	 * 
-	 * @param password input from user
-	 * @param token    input from user url
-	 * 
-	 * @return returns the user object which is updated
-	 */
-	User setPassword(String password, String token);
-
-
-	/**
-	 * Purpose: method for verification account when new user register themselve
+	 * Purpose: method for verification account when new user register themselve's
 	 * then the system generated mail is send to that particular user and when user
 	 * goes to that mail and click the verification link then user account gets
 	 * activated when user account is activated user is getting authorized to use
@@ -92,9 +74,31 @@ public interface UserService {
 	 * @param token this is token coming from the mail which is send while
 	 *              registration to user mail account in that mail token is
 	 *              available
-	 * @return if user successfully verify the link then it will return the user
-	 *         back else application will throw the exception failed to verify email
+	 * @return returns ResponseEntity<Response> which contains the response of the
+	 *         method
 	 */
-	User verify(String token);
+	ResponseEntity<Response> verify(String token);
+
+	/**
+	 * Purpose: method is created for the sending the set password link on email if
+	 * user forgets there password
+	 * 
+	 * @param email email id receives from the use from user response
+	 * 
+	 * @return returns ResponseEntity<Response> which contains the response of the
+	 *         method
+	 */
+	ResponseEntity<Response> forgotPassword(String email);
+
+	/**
+	 * Purpose: method is created for changing the password of current user
+	 * 
+	 * @param password input from user
+	 * @param token    input from user URL(Unified Resource Locator)
+	 * 
+	 * @return returns ResponseEntity<Response> which contains the response of the
+	 *         method
+	 */
+	ResponseEntity<Response> setPassword(String password, String token);
 
 }

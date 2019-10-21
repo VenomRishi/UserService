@@ -12,11 +12,27 @@
 
 package com.bridgelabz.fundoo.user.dto;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 public class RegisterDTO {
 
+	@Size(min=2, max=30) 
+	@NotEmpty(message = "Please provide a first name")
 	private String fname;
+	
+	@Size(min=2, max=30) 
+	@NotEmpty(message = "Please provide a last name")
 	private String lname;
+	
+	@Email
+	@Size(min=2, max=50) 
+	@NotEmpty(message = "Please provide a email")
 	private String email;
+	
+	@Size(min=6, max=30) 
+	@NotEmpty(message = "Please provide a password")
 	private String password;
 
 	public String getFname() {

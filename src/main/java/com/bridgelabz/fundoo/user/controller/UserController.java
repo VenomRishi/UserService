@@ -12,10 +12,11 @@
 
 package com.bridgelabz.fundoo.user.controller;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
-import com.bridgelabz.fundoo.user.model.User;
+import com.bridgelabz.fundoo.user.response.Response;
 import com.bridgelabz.fundoo.user.service.UserService;
 
 @RestController
@@ -51,9 +52,9 @@ public class UserController {
 	 *         HttpStatus in that entity
 	 */
 	@PostMapping("/register")
-	public ResponseEntity<User> register(@RequestBody RegisterDTO registerDTO) {
-		LOG.info("register API");
-		return new ResponseEntity<>(service.register(registerDTO), HttpStatus.OK);
+	public ResponseEntity<Response> register(@Valid @RequestBody RegisterDTO registerDTO) {
+		LOG.info("register controller API");
+		return service.register(registerDTO);
 	}
 
 	/**
@@ -72,9 +73,9 @@ public class UserController {
 	 *         HttpStatus in that entity
 	 */
 	@PutMapping("/verify/{apptoken}")
-	public ResponseEntity<User> verify(@PathVariable(name = "apptoken") String token) {
-		LOG.info("verify registration API");
-		return new ResponseEntity<>(service.verify(token), HttpStatus.OK);
+	public ResponseEntity<Response> verify(@PathVariable(name = "apptoken") String token) {
+		LOG.info("verify registration controller API");
+		return service.verify(token);
 	}
 
 	/**
@@ -91,9 +92,9 @@ public class UserController {
 	 *         entity
 	 */
 	@PutMapping("/login")
-	public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
-		LOG.info("login API");
-		return new ResponseEntity<>(service.login(loginDTO), HttpStatus.OK);
+	public ResponseEntity<Response> login(@Valid @RequestBody LoginDTO loginDTO) {
+		LOG.info("login controller API");
+		return service.login(loginDTO);
 
 	}
 
@@ -109,12 +110,11 @@ public class UserController {
 	 * @param email input from the user to put the request for changing the password
 	 * @return ResponseEntity which is holding the String and HttpStatus in that
 	 *         entity
-	 * @throws Exception this will throw the exception if something went wrong
 	 */
 	@PostMapping("/forgetpassword")
-	public ResponseEntity<String> forgotPassword(@RequestHeader(name = "email") String email) throws Exception {
-		LOG.info("forgot password API");
-		return new ResponseEntity<>(service.forgotPassword(email), HttpStatus.OK);
+	public ResponseEntity<Response> forgotPassword(@RequestHeader(name = "email") String email) {
+		LOG.info("forgot password controller API");
+		return service.forgotPassword(email);
 	}
 
 	/**
@@ -134,10 +134,10 @@ public class UserController {
 	 *         entity
 	 */
 	@PutMapping("/setpassword/{apptoken}")
-	public ResponseEntity<User> setPassword(@RequestHeader String password,
+	public ResponseEntity<Response> setPassword(@RequestHeader String password,
 			@PathVariable(name = "apptoken") String token) {
-		LOG.info("reset password API");
-		return new ResponseEntity<User>(service.setPassword(password, token), HttpStatus.OK);
+		LOG.info("reset password controller API");
+		return service.setPassword(password, token);
 	}
 
 }
