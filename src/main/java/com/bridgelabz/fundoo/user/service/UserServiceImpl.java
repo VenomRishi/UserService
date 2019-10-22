@@ -13,13 +13,9 @@
 package com.bridgelabz.fundoo.user.service;
 
 import java.util.Date;
-
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -57,14 +53,6 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserUtility userUtility;
-	
-	@Autowired
-	private Environment environment;
-	
-	@PostConstruct
-	public void init() {
-		System.out.println(environment.getProperty("spring.mail.username"));
-	}
 
 	/**
 	 * Purpose: method for login the user into the system
