@@ -154,7 +154,7 @@ public class UserServiceImpl implements UserService {
 	 * Purpose: method for verification account when new user register themselve's
 	 * then the system generated mail is send to that particular user and when user
 	 * goes to that mail and click the verification link then user account gets
-	 * activated when user account is activated user is getting authorized to use
+	 * activated when user account is activated user is getting authorised to use
 	 * there application then user can easy login with there email account with the
 	 * password along with it
 	 * 

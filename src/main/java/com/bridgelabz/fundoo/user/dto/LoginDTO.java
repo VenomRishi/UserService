@@ -12,16 +12,18 @@
 
 package com.bridgelabz.fundoo.user.dto;
 
-import javax.validation.constraints.Email;
+//import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class LoginDTO {
+
 	
-	@Email
 	@NotEmpty(message = "Please provide a email")
+	@Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", message = "Please provide a proper email")
 	private String email;
-	
+
 	@Size(min = 6, max = 30)
 	@NotEmpty(message = "Please provide a password")
 	private String password;

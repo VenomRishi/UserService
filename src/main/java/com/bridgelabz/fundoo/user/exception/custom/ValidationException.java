@@ -25,6 +25,20 @@ import com.bridgelabz.fundoo.user.response.Response;
 @RestControllerAdvice
 public class ValidationException extends ResponseEntityExceptionHandler {
 
+	/**
+	 * Purpose: this method is used to responds back the exception to used end
+	 * 
+	 * @param ex      exception which will generated from program if any input is
+	 *                invalid
+	 * @param headers if there is any header which also comes from application
+	 * @param status  this is HTTP status
+	 * @param request this is request to specify which request is catch
+	 * 
+	 * @return ResponseEntity<Response> this is response entity which will give the
+	 *         proper response to client side application in this ResponseEntity we
+	 *         are going to attach Response which holds status code, message and
+	 *         data
+	 */
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {

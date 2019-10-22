@@ -18,6 +18,12 @@ public class LoginException extends RuntimeException {
 //		return this;
 //	}
 
+	/**
+	 * Purpose: To create a custom exception handler of Login API of
+	 * UserService
+	 * 
+	 * @param message exception which can generated from the program
+	 */
 	public LoginException(String message) {
 		super(message);
 	}
