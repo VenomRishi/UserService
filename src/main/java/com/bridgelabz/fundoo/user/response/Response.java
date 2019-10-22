@@ -1,8 +1,8 @@
 /******************************************************************************
- *  Purpose: This class is created for generating the response which will 
+ *  Purpose: This class is created for generating the response this is 
 			 HTTP(Hyper Text Transfer Protocol) response which will contain
 			 status code, message (response related), Object if it returning 
-			 something
+			 something.
  *
  *  @author  Rishikesh Mhatre
  *  @version 1.0
