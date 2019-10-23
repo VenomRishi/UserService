@@ -25,12 +25,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.bridgelabz.fundoo.user.common.Constant;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
 import com.bridgelabz.fundoo.user.dto.SetPasswordDTO;
 import com.bridgelabz.fundoo.user.response.Response;
 import com.bridgelabz.fundoo.user.service.IUserService;
-import com.bridgelabz.fundoo.user.service.StaticRefs;
 
 @RestController
 @RequestMapping("/user")
@@ -55,7 +56,7 @@ public class UserController {
 	 */
 	@PostMapping("/register")
 	public ResponseEntity<Response> register(@Valid @RequestBody RegisterDTO registerDTO) {
-		LOG.info(StaticRefs.CONTROLLER_REGISTER_METHOD);
+		LOG.info(Constant.CONTROLLER_REGISTER_METHOD);
 		return new ResponseEntity<>(service.register(registerDTO), HttpStatus.OK);
 	}
 
@@ -76,7 +77,7 @@ public class UserController {
 	 */
 	@PutMapping("/verify")
 	public ResponseEntity<Response> verify(@RequestHeader String token) {
-		LOG.info(StaticRefs.CONTROLLER_VERIFY_REGISTER_METHOD);
+		LOG.info(Constant.CONTROLLER_VERIFY_REGISTER_METHOD);
 		return new ResponseEntity<>(service.verify(token), HttpStatus.OK);
 	}
 
@@ -95,7 +96,7 @@ public class UserController {
 	 */
 	@PutMapping("/login")
 	public ResponseEntity<Response> login(@Valid @RequestBody LoginDTO loginDTO) {
-		LOG.info(StaticRefs.CONTROLLER_LOGIN_METHOD);
+		LOG.info(Constant.CONTROLLER_LOGIN_METHOD);
 		return new ResponseEntity<>(service.login(loginDTO), HttpStatus.OK);
 
 	}
@@ -115,7 +116,7 @@ public class UserController {
 	 */
 	@PostMapping("/forgetpassword")
 	public ResponseEntity<Response> forgotPassword(@RequestHeader(name = "email") String email) {
-		LOG.info(StaticRefs.CONTROLLER_FORGOT_PASSWORD_METHOD);
+		LOG.info(Constant.CONTROLLER_FORGOT_PASSWORD_METHOD);
 		return new ResponseEntity<>(service.forgotPassword(email), HttpStatus.OK);
 	}
 
@@ -137,7 +138,7 @@ public class UserController {
 	 */
 	@PutMapping("/setpassword")
 	public ResponseEntity<Response> setPassword(@RequestBody SetPasswordDTO setPasswordDTO) {
-		LOG.info(StaticRefs.CONTROLLER_SET_PASSWORD_METHOD);
+		LOG.info(Constant.CONTROLLER_SET_PASSWORD_METHOD);
 		return new ResponseEntity<>(service.setPassword(setPasswordDTO), HttpStatus.OK);
 	}
 

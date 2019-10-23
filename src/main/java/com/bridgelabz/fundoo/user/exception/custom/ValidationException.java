@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.bridgelabz.fundoo.user.common.Constant;
 import com.bridgelabz.fundoo.user.response.Response;
-import com.bridgelabz.fundoo.user.service.StaticRefs;
 
 @RestControllerAdvice
 public class ValidationException extends ResponseEntityExceptionHandler {
@@ -48,7 +48,7 @@ public class ValidationException extends ResponseEntityExceptionHandler {
 		List<String> errors = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
 				.collect(Collectors.toList());
 
-		return new ResponseEntity<>(new Response(400, StaticRefs.VALIDATION_EXCEPTION, errors), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new Response(400, Constant.VALIDATION_EXCEPTION, errors), HttpStatus.BAD_REQUEST);
 
 	}
 }

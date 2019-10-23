@@ -17,16 +17,16 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import com.bridgelabz.fundoo.user.service.StaticRefs;
+import com.bridgelabz.fundoo.user.common.Constant;
 
 public class LoginDTO {
 
-	@NotEmpty(message = StaticRefs.VALIDATE_EMAIL)
-	@Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", message = StaticRefs.VALIDATE_PROPER_EMAIL)
+	@NotEmpty(message = Constant.VALIDATE_EMAIL)
+	@Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", message = Constant.VALIDATE_PROPER_EMAIL)
 	private String email;
 
 	@Size(min = 6, max = 30)
-	@NotEmpty(message = StaticRefs.VALIDATE_PASSWORD)
+	@NotEmpty(message = Constant.VALIDATE_PASSWORD)
 	private String password;
 
 	public String getEmail() {

@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.bridgelabz.fundoo.user.common.Constant;
 import com.bridgelabz.fundoo.user.exception.custom.ForgotPasswordException;
 import com.bridgelabz.fundoo.user.exception.custom.LoginException;
 import com.bridgelabz.fundoo.user.exception.custom.RegisterException;
@@ -43,7 +44,8 @@ public class GlobalException {
 	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Response> globalExceptionHandler(Exception ex) {
-		return new ResponseEntity<>(new Response(500, ex.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(new Response(Constant.HTTP_STATUS_INTERNAL_SERVER_ERROR, ex.getMessage(), null),
+				HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	/**
@@ -61,7 +63,8 @@ public class GlobalException {
 	@ExceptionHandler(LoginException.class)
 	public ResponseEntity<Response> loginExceptionHandler(LoginException ex) {
 
-		return new ResponseEntity<>(new Response(400, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new Response(Constant.HTTP_STATUS_BAD_REQUEST, ex.getMessage(), null),
+				HttpStatus.BAD_REQUEST);
 	}
 
 	/**
@@ -78,7 +81,8 @@ public class GlobalException {
 	 */
 	@ExceptionHandler(RegisterException.class)
 	public ResponseEntity<Response> registerExceptionHandler(RegisterException ex) {
-		return new ResponseEntity<>(new Response(400, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new Response(Constant.HTTP_STATUS_BAD_REQUEST, ex.getMessage(), null),
+				HttpStatus.BAD_REQUEST);
 	}
 
 	/**
@@ -95,7 +99,8 @@ public class GlobalException {
 	 */
 	@ExceptionHandler(RegisterVerifyException.class)
 	public ResponseEntity<Response> registerVerifyExceptionHandler(RegisterVerifyException ex) {
-		return new ResponseEntity<>(new Response(400, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new Response(Constant.HTTP_STATUS_BAD_REQUEST, ex.getMessage(), null),
+				HttpStatus.BAD_REQUEST);
 	}
 
 	/**
@@ -112,7 +117,8 @@ public class GlobalException {
 	 */
 	@ExceptionHandler(ForgotPasswordException.class)
 	public ResponseEntity<Response> forgotPasswordExceptionHandler(ForgotPasswordException ex) {
-		return new ResponseEntity<>(new Response(400, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new Response(Constant.HTTP_STATUS_BAD_REQUEST, ex.getMessage(), null),
+				HttpStatus.BAD_REQUEST);
 	}
 
 	/**
@@ -129,7 +135,8 @@ public class GlobalException {
 	 */
 	@ExceptionHandler(SetPasswordException.class)
 	public ResponseEntity<Response> setPasswordExceptionHandler(SetPasswordException ex) {
-		return new ResponseEntity<>(new Response(400, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new Response(Constant.HTTP_STATUS_BAD_REQUEST, ex.getMessage(), null),
+				HttpStatus.BAD_REQUEST);
 	}
 
 }

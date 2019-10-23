@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import com.bridgelabz.fundoo.user.common.Constant;
 import com.bridgelabz.fundoo.user.configuration.UserConfiguration;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
@@ -63,18 +65,18 @@ public class ImplUserService implements IUserService {
 	 */
 	@Override
 	public Response login(LoginDTO loginDTO) {
-		LOG.info(StaticRefs.SERVICE_LOGIN_METHOD);
+		LOG.info(Constant.SERVICE_LOGIN_METHOD);
 
 		if (userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(loginDTO.getEmail())
 				&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()) && i.isActive())) {
-			LOG.info(StaticRefs.SUCCESS_LOGIN);
-			return new Response(200, StaticRefs.SUCCESS_LOGIN, true);
+			LOG.info(Constant.SUCCESS_LOGIN);
+			return new Response(200, Constant.SUCCESS_LOGIN, true);
 
 		}
 
 		else {
-			LOG.error(StaticRefs.FAILED_LOGIN);
-			throw new LoginException(StaticRefs.FAILED_LOGIN);
+			LOG.error(Constant.FAILED_LOGIN);
+			throw new LoginException(Constant.FAILED_LOGIN);
 
 		}
 
@@ -104,17 +106,17 @@ public class ImplUserService implements IUserService {
 	@Override
 	public Response register(RegisterDTO registerDTO) {
 
-		LOG.info(StaticRefs.SERVICE_REGISTER_METHOD);
+		LOG.info(Constant.SERVICE_REGISTER_METHOD);
 		// System.out.println(userRepository.findByEmail(registerDTO.getEmail()));
 		if (!userRepository.findByEmail(registerDTO.getEmail()).isEmpty()) {
-			LOG.error(registerDTO.getEmail() + StaticRefs.REGISTER_EMAIL_FOUND);
-			throw new RegisterException(registerDTO.getEmail() + StaticRefs.REGISTER_EMAIL_FOUND);
+			LOG.error(registerDTO.getEmail() + Constant.REGISTER_EMAIL_FOUND);
+			throw new RegisterException(registerDTO.getEmail() + Constant.REGISTER_EMAIL_FOUND);
 		}
 		registerVerificationSendEmail(registerDTO.getEmail());
 		registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
 		User user = config.modelMapper().map(registerDTO, User.class);
-		LOG.info(StaticRefs.SUCCESS_REGISTER);
-		return new Response(200, StaticRefs.SUCCESS_REGISTER, userRepository.save(user));
+		LOG.info(Constant.SUCCESS_REGISTER);
+		return new Response(200, Constant.SUCCESS_REGISTER, userRepository.save(user));
 	}
 
 	/**
@@ -128,13 +130,13 @@ public class ImplUserService implements IUserService {
 	 */
 	@Override
 	public void registerVerificationSendEmail(String email) {
-		LOG.info(StaticRefs.SERVICE_REGISTER_VERIFICATION_METHOD);
+		LOG.info(Constant.SERVICE_REGISTER_VERIFICATION_METHOD);
 
 		// code for sending email to recipient
-		String token = TokenUtility.buildToken(email, StaticRefs.KEY_REGISTER_VERIFY);
+		String token = TokenUtility.buildToken(email, Constant.KEY_REGISTER_VERIFY);
 		SimpleMailMessage sampleMailMessage = userUtility.sendMailForRegistrationVerification(email, token);
 		javaMailSender.send(sampleMailMessage);
-		LOG.info(StaticRefs.EMAIL_SEND);
+		LOG.info(Constant.EMAIL_SEND);
 
 	}
 
@@ -153,19 +155,19 @@ public class ImplUserService implements IUserService {
 	 */
 	@Override
 	public Response verify(String token) {
-		LOG.info(StaticRefs.SERVICE_VERIFY_USER_METHOD);
+		LOG.info(Constant.SERVICE_VERIFY_USER_METHOD);
 
-		Claims claims = TokenUtility.parseToken(token, StaticRefs.KEY_REGISTER_VERIFY);
+		Claims claims = TokenUtility.parseToken(token, Constant.KEY_REGISTER_VERIFY);
 		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
 				.orElse(null);
 		if (user == null) {
-			LOG.error(StaticRefs.FAILED_TO_VERIFY);
-			throw new RegisterVerifyException(StaticRefs.FAILED_TO_VERIFY);
+			LOG.error(Constant.FAILED_TO_VERIFY);
+			throw new RegisterVerifyException(Constant.FAILED_TO_VERIFY);
 		}
 
 		user.setActive(true);
-		LOG.info(StaticRefs.SUCCESS_VERIFY);
-		return new Response(200, StaticRefs.SUCCESS_VERIFY, userRepository.save(user));
+		LOG.info(Constant.SUCCESS_VERIFY);
+		return new Response(200, Constant.SUCCESS_VERIFY, userRepository.save(user));
 
 	}
 
@@ -179,20 +181,20 @@ public class ImplUserService implements IUserService {
 	 */
 	@Override
 	public Response forgotPassword(String email) {
-		LOG.info(StaticRefs.SERVICE_FORGOT_PASSWORD_METHOD);
+		LOG.info(Constant.SERVICE_FORGOT_PASSWORD_METHOD);
 
 		// check email is there in database or not
 		if (userRepository.findByEmail(email) == null) {
-			LOG.info(email + StaticRefs.EMAIL_NOT_FOUND);
-			throw new ForgotPasswordException(email + StaticRefs.EMAIL_NOT_FOUND);
+			LOG.info(email + Constant.EMAIL_NOT_FOUND);
+			throw new ForgotPasswordException(email + Constant.EMAIL_NOT_FOUND);
 
 		}
 		// code for sending email to recipient
-		String token = TokenUtility.buildToken(email, StaticRefs.KEY_SET_PASSWORD);
+		String token = TokenUtility.buildToken(email, Constant.KEY_SET_PASSWORD);
 		SimpleMailMessage sampleMailMessage = userUtility.sendMail(email, token);
 		javaMailSender.send(sampleMailMessage);
-		LOG.info(StaticRefs.EMAIL_SEND_FOR_FORGOT_PASSWORD);
-		return new Response(200, StaticRefs.EMAIL_SEND_FOR_FORGOT_PASSWORD, null);
+		LOG.info(Constant.EMAIL_SEND_FOR_FORGOT_PASSWORD);
+		return new Response(200, Constant.EMAIL_SEND_FOR_FORGOT_PASSWORD, null);
 
 	}
 
@@ -205,21 +207,21 @@ public class ImplUserService implements IUserService {
 	 */
 	@Override
 	public Response setPassword(SetPasswordDTO setPasswordDTO) {
-		LOG.info(StaticRefs.SERVICE_SET_PASSWORD_METHOD);
+		LOG.info(Constant.SERVICE_SET_PASSWORD_METHOD);
 
-		Claims claims = TokenUtility.parseToken(setPasswordDTO.getToken(), StaticRefs.KEY_SET_PASSWORD);
+		Claims claims = TokenUtility.parseToken(setPasswordDTO.getToken(), Constant.KEY_SET_PASSWORD);
 		LOG.info(claims.getSubject());
 		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
 				.orElse(null);
 		if (user == null) {
 
-			LOG.error(StaticRefs.FAILED_TO_SET_PASSWORD);
-			throw new SetPasswordException(StaticRefs.FAILED_TO_SET_PASSWORD);
+			LOG.error(Constant.FAILED_TO_SET_PASSWORD);
+			throw new SetPasswordException(Constant.FAILED_TO_SET_PASSWORD);
 
 		}
 		user.setPassword(config.passwordEncoder().encode(setPasswordDTO.getPassword()));
-		LOG.info(StaticRefs.SUCCESS_SET_PASSWORD);
-		return new Response(200, StaticRefs.SUCCESS_SET_PASSWORD, userRepository.save(user));
+		LOG.info(Constant.SUCCESS_SET_PASSWORD);
+		return new Response(200, Constant.SUCCESS_SET_PASSWORD, userRepository.save(user));
 
 	}
 
