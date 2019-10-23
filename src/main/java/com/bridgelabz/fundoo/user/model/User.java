@@ -31,7 +31,6 @@ public class User {
 	@Id
 	@Column(name = "u_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotNull
 	private Integer uid;
 
 	@Column(name = "u_fname")
@@ -53,13 +52,11 @@ public class User {
 	@Column(name = "u_reg_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	@CreationTimestamp
-	@NotNull
 	private Date regDate;
 
 	@Column(name = "u_update_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	@UpdateTimestamp
-	@NotNull
 	private Date updateDate;
 
 	@Column(name = "u_active", columnDefinition = "boolean default false")

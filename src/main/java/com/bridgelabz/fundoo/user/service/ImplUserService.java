@@ -112,9 +112,10 @@ public class ImplUserService implements IUserService {
 			LOG.error(registerDTO.getEmail() + Constant.REGISTER_EMAIL_FOUND);
 			throw new RegisterException(registerDTO.getEmail() + Constant.REGISTER_EMAIL_FOUND);
 		}
-		registerVerificationSendEmail(registerDTO.getEmail());
+		
 		registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
 		User user = config.modelMapper().map(registerDTO, User.class);
+		registerVerificationSendEmail(registerDTO.getEmail());
 		LOG.info(Constant.SUCCESS_REGISTER);
 		return new Response(200, Constant.SUCCESS_REGISTER, userRepository.save(user));
 	}
