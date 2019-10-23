@@ -12,18 +12,16 @@
 
 package com.bridgelabz.fundoo.user.service;
 
-import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoo.user.configuration.UserConfiguration;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
+import com.bridgelabz.fundoo.user.dto.SetPasswordDTO;
 import com.bridgelabz.fundoo.user.exception.custom.ForgotPasswordException;
 import com.bridgelabz.fundoo.user.exception.custom.LoginException;
 import com.bridgelabz.fundoo.user.exception.custom.RegisterException;
@@ -32,15 +30,15 @@ import com.bridgelabz.fundoo.user.exception.custom.SetPasswordException;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
 import com.bridgelabz.fundoo.user.response.Response;
+import com.bridgelabz.fundoo.user.utility.TokenUtility;
 import com.bridgelabz.fundoo.user.utility.UserUtility;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+
 
 @Service
-public class UserServiceImpl implements UserService {
+public class ImplUserService implements IUserService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ImplUserService.class);
 
 	@Autowired
 	private UserRepository userRepository;
@@ -61,23 +59,22 @@ public class UserServiceImpl implements UserService {
 	 *                 controller this object is holding all the information which
 	 *                 is coming from the user end
 	 * 
-	 * @return returns ResponseEntity<Response> which contains the response of the
-	 *         method
+	 * @return returns Response which contains the response of the method
 	 */
 	@Override
-	public ResponseEntity<Response> login(LoginDTO loginDTO) {
-		LOG.info("method: login service");
+	public Response login(LoginDTO loginDTO) {
+		LOG.info(StaticRefs.SERVICE_LOGIN_METHOD);
 
 		if (userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(loginDTO.getEmail())
 				&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()) && i.isActive())) {
-			LOG.info("login successful");
-			return new ResponseEntity<>(new Response(200, "Login successful", true), HttpStatus.OK);
+			LOG.info(StaticRefs.SUCCESS_LOGIN);
+			return new Response(200, StaticRefs.SUCCESS_LOGIN, true);
 
 		}
 
 		else {
-			LOG.error("Invalid username and password and/or account is not active");
-			throw new LoginException("Invalid username and password and/or account is not active");
+			LOG.error(StaticRefs.FAILED_LOGIN);
+			throw new LoginException(StaticRefs.FAILED_LOGIN);
 
 		}
 
@@ -102,30 +99,22 @@ public class UserServiceImpl implements UserService {
 	 * @param registerDTO this is object of RegisterDTO class which is passed from
 	 *                    controller this object is holding all the information
 	 *                    which is coming from the user end
-	 * @return returns ResponseEntity<Response> which contains the response of the
-	 *         method
+	 * @return returns Response which contains the response of the method
 	 */
 	@Override
-	public ResponseEntity<Response> register(RegisterDTO registerDTO) {
+	public Response register(RegisterDTO registerDTO) {
 
-		LOG.info("method: register service");
+		LOG.info(StaticRefs.SERVICE_REGISTER_METHOD);
 		// System.out.println(userRepository.findByEmail(registerDTO.getEmail()));
-		if (userRepository.findByEmail(registerDTO.getEmail()).isEmpty()) {
-			registerVerificationSendEmail(registerDTO.getEmail());
-			registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
-			User user = config.modelMapper().map(registerDTO, User.class);
-			LOG.info("registration successful");
-			return new ResponseEntity<>(new Response(200, "registration successful", userRepository.save(user)),
-					HttpStatus.OK);
-
-		} else {
-			LOG.error(registerDTO.getEmail()
-					+ " found record with this email cannot able to create new entry with this email");
-			throw new RegisterException(registerDTO.getEmail()
-					+ " found record with this email cannot able to create new entry with this email");
-
+		if (!userRepository.findByEmail(registerDTO.getEmail()).isEmpty()) {
+			LOG.error(registerDTO.getEmail() + StaticRefs.REGISTER_EMAIL_FOUND);
+			throw new RegisterException(registerDTO.getEmail() + StaticRefs.REGISTER_EMAIL_FOUND);
 		}
-
+		registerVerificationSendEmail(registerDTO.getEmail());
+		registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
+		User user = config.modelMapper().map(registerDTO, User.class);
+		LOG.info(StaticRefs.SUCCESS_REGISTER);
+		return new Response(200, StaticRefs.SUCCESS_REGISTER, userRepository.save(user));
 	}
 
 	/**
@@ -139,14 +128,13 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public void registerVerificationSendEmail(String email) {
-		LOG.info("method: register verification sending email");
+		LOG.info(StaticRefs.SERVICE_REGISTER_VERIFICATION_METHOD);
 
 		// code for sending email to recipient
-		String token = Jwts.builder().setSubject(email).setIssuedAt(new Date())
-				.signWith(SignatureAlgorithm.HS256, "verifykey").compact();
+		String token = TokenUtility.buildToken(email, StaticRefs.KEY_REGISTER_VERIFY);
 		SimpleMailMessage sampleMailMessage = userUtility.sendMailForRegistrationVerification(email, token);
 		javaMailSender.send(sampleMailMessage);
-		LOG.info("email is send to recipient");
+		LOG.info(StaticRefs.EMAIL_SEND);
 
 	}
 
@@ -161,26 +149,23 @@ public class UserServiceImpl implements UserService {
 	 * @param token this is token coming from the mail which is send while
 	 *              registration to user mail account in that mail token is
 	 *              available
-	 * @return returns ResponseEntity<Response> which contains the response of the
-	 *         method
+	 * @return returns Response which contains the response of the method
 	 */
 	@Override
-	public ResponseEntity<Response> verify(String token) {
-		LOG.info("method: verify service");
+	public Response verify(String token) {
+		LOG.info(StaticRefs.SERVICE_VERIFY_USER_METHOD);
 
-		Claims claims = Jwts.parser().setSigningKey("verifykey").parseClaimsJws(token).getBody();
+		Claims claims = TokenUtility.parseToken(token, StaticRefs.KEY_REGISTER_VERIFY);
 		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
 				.orElse(null);
-		if (user != null) {
-			user.setActive(true);
-			LOG.info("user updated");
-			return new ResponseEntity<>(
-					new Response(200, "User updated and verify successful", userRepository.save(user)), HttpStatus.OK);
-
-		} else {
-			LOG.error("failed to verify..!");
-			throw new RegisterVerifyException("failed to verify..!");
+		if (user == null) {
+			LOG.error(StaticRefs.FAILED_TO_VERIFY);
+			throw new RegisterVerifyException(StaticRefs.FAILED_TO_VERIFY);
 		}
+
+		user.setActive(true);
+		LOG.info(StaticRefs.SUCCESS_VERIFY);
+		return new Response(200, StaticRefs.SUCCESS_VERIFY, userRepository.save(user));
 
 	}
 
@@ -190,61 +175,51 @@ public class UserServiceImpl implements UserService {
 	 * 
 	 * @param email email id receives from the use from user response
 	 * 
-	 * @return returns ResponseEntity<Response> which contains the response of the
-	 *         method
+	 * @return returns Response which contains the response of the method
 	 */
 	@Override
-	public ResponseEntity<Response> forgotPassword(String email) {
-		LOG.info("method: forgot password service");
+	public Response forgotPassword(String email) {
+		LOG.info(StaticRefs.SERVICE_FORGOT_PASSWORD_METHOD);
 
 		// check email is there in database or not
-		if (userRepository.findByEmail(email) != null) {
-			// code for sending email to recipient
-			String token = Jwts.builder().setSubject(email).setIssuedAt(new Date())
-					.signWith(SignatureAlgorithm.HS256, "secretkey").compact();
-			SimpleMailMessage sampleMailMessage = userUtility.sendMail(email, token);
-			javaMailSender.send(sampleMailMessage);
-			LOG.info("Email is send for forget password click on link to send new password");
+		if (userRepository.findByEmail(email) == null) {
+			LOG.info(email + StaticRefs.EMAIL_NOT_FOUND);
+			throw new ForgotPasswordException(email + StaticRefs.EMAIL_NOT_FOUND);
 
-			return new ResponseEntity<>(
-					new Response(200, "Email is send for forget password click on link to send new password", null),
-					HttpStatus.OK);
-		} else {
-			LOG.info(email + " not found is database");
-			throw new ForgotPasswordException(email + " not found is database");
 		}
+		// code for sending email to recipient
+		String token = TokenUtility.buildToken(email, StaticRefs.KEY_SET_PASSWORD);
+		SimpleMailMessage sampleMailMessage = userUtility.sendMail(email, token);
+		javaMailSender.send(sampleMailMessage);
+		LOG.info(StaticRefs.EMAIL_SEND_FOR_FORGOT_PASSWORD);
+		return new Response(200, StaticRefs.EMAIL_SEND_FOR_FORGOT_PASSWORD, null);
 
 	}
 
 	/**
 	 * Purpose: method is created for changing the password of current user
 	 * 
-	 * @param password input from user
-	 * @param token    input from user URL(unified resource locator)
+	 * @param setPasswordDTO input from user
 	 * 
-	 * @return returns ResponseEntity<Response> which contains the response of the
-	 *         method
+	 * @return returns Response which contains the response of the method
 	 */
 	@Override
-	public ResponseEntity<Response> setPassword(String password, String token) {
-		LOG.info("method: set password service");
+	public Response setPassword(SetPasswordDTO setPasswordDTO) {
+		LOG.info(StaticRefs.SERVICE_SET_PASSWORD_METHOD);
 
-		Claims claims = Jwts.parser().setSigningKey("secretkey").parseClaimsJws(token).getBody();
+		Claims claims = TokenUtility.parseToken(setPasswordDTO.getToken(), StaticRefs.KEY_SET_PASSWORD);
 		LOG.info(claims.getSubject());
 		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
 				.orElse(null);
-		if (user != null) {
-			user.setPassword(config.passwordEncoder().encode(password));
-			LOG.info("User updated and password set successful");
-			return new ResponseEntity<>(
-					new Response(200, "User updated and password set successful", userRepository.save(user)),
-					HttpStatus.OK);
+		if (user == null) {
 
-		} else {
-			LOG.error("unable to set new password due to there's not email associated with your token");
-			throw new SetPasswordException(
-					"unable to set new password due to there's not email associated with your token");
+			LOG.error(StaticRefs.FAILED_TO_SET_PASSWORD);
+			throw new SetPasswordException(StaticRefs.FAILED_TO_SET_PASSWORD);
+
 		}
+		user.setPassword(config.passwordEncoder().encode(setPasswordDTO.getPassword()));
+		LOG.info(StaticRefs.SUCCESS_SET_PASSWORD);
+		return new Response(200, StaticRefs.SUCCESS_SET_PASSWORD, userRepository.save(user));
 
 	}
 

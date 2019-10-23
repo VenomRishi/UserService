@@ -13,6 +13,8 @@ package com.bridgelabz.fundoo.user.utility;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 
+import com.bridgelabz.fundoo.user.service.StaticRefs;
+
 @Component
 public class UserUtility {
 
@@ -29,8 +31,8 @@ public class UserUtility {
 	public SimpleMailMessage sendMail(String email, String token) {
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setTo(email);
-		simpleMailMessage.setSubject("Setup new Password of UserService Application");
-		simpleMailMessage.setText("http://localhost:8080/user/setpassword/" + token);
+		simpleMailMessage.setSubject(StaticRefs.EMAIL_SUBJECT_SETPASSWORD);
+		simpleMailMessage.setText(StaticRefs.BASE_URL + StaticRefs.SET_URI + token);
 		return simpleMailMessage;
 	}
 
@@ -47,8 +49,8 @@ public class UserUtility {
 	public SimpleMailMessage sendMailForRegistrationVerification(String email, String token) {
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setTo(email);
-		simpleMailMessage.setSubject("Verify your email in UserService Application");
-		simpleMailMessage.setText("http://localhost:8080/user/verify/" + token);
+		simpleMailMessage.setSubject(StaticRefs.EMAIL_SUBJECT_VERIFY);
+		simpleMailMessage.setText(StaticRefs.BASE_URL + StaticRefs.VERIFY_URI + token);
 		return simpleMailMessage;
 	}
 

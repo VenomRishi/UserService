@@ -12,13 +12,12 @@
 
 package com.bridgelabz.fundoo.user.service;
 
-import org.springframework.http.ResponseEntity;
-
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
+import com.bridgelabz.fundoo.user.dto.SetPasswordDTO;
 import com.bridgelabz.fundoo.user.response.Response;
 
-public interface UserService {
+public interface IUserService {
 	/**
 	 * Purpose: method for login the user into the system
 	 * 
@@ -29,7 +28,7 @@ public interface UserService {
 	 * @return returns ResponseEntity<Response> which contains the response of the
 	 *         method
 	 */
-	ResponseEntity<Response> login(LoginDTO loginDTO);
+	Response login(LoginDTO loginDTO);
 
 	/**
 	 * Purpose: method for checking the email is there in database or not
@@ -46,10 +45,9 @@ public interface UserService {
 	 * @param registerDTO this is object of RegisterDTO class which is passed from
 	 *                    controller this object is holding all the information
 	 *                    which is coming from the user end
-	 * @return returns ResponseEntity<Response> which contains the response of the
-	 *         method
+	 * @return returns Response which contains the response of the method
 	 */
-	ResponseEntity<Response> register(RegisterDTO registerDTO);
+	Response register(RegisterDTO registerDTO);
 
 	/**
 	 * Purpose: method is created for sending the email for activating the user
@@ -67,17 +65,16 @@ public interface UserService {
 	 * Purpose: method for verification account when new user register themselve's
 	 * then the system generated mail is send to that particular user and when user
 	 * goes to that mail and click the verification link then user account gets
-	 * activated when user account is activated user is getting authorized to use
+	 * activated when user account is activated user is getting authorised to use
 	 * there application then user can easy login with there email account with the
 	 * password along with it
 	 * 
 	 * @param token this is token coming from the mail which is send while
 	 *              registration to user mail account in that mail token is
 	 *              available
-	 * @return returns ResponseEntity<Response> which contains the response of the
-	 *         method
+	 * @return returns Response which contains the response of the method
 	 */
-	ResponseEntity<Response> verify(String token);
+	Response verify(String token);
 
 	/**
 	 * Purpose: method is created for the sending the set password link on email if
@@ -85,20 +82,17 @@ public interface UserService {
 	 * 
 	 * @param email email id receives from the use from user response
 	 * 
-	 * @return returns ResponseEntity<Response> which contains the response of the
-	 *         method
+	 * @return returns Response which contains the response of the method
 	 */
-	ResponseEntity<Response> forgotPassword(String email);
+	Response forgotPassword(String email);
 
 	/**
 	 * Purpose: method is created for changing the password of current user
 	 * 
-	 * @param password input from user
-	 * @param token    input from user URL(Unified Resource Locator)
+	 * @param setPasswordDTO input from user
 	 * 
-	 * @return returns ResponseEntity<Response> which contains the response of the
-	 *         method
+	 * @return returns Response which contains the response of the method
 	 */
-	ResponseEntity<Response> setPassword(String password, String token);
+	Response setPassword(SetPasswordDTO setPasswordDTO);
 
 }
