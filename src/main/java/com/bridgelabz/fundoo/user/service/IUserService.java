@@ -2,7 +2,7 @@
  *  Purpose: This is interface of User Service class in the @Service it handles
  *  		 all the request coming from controller and which is then process
  *  		 in service class as it is interface so there is only declaration 
- *  		 of methods no defination is there
+ *  		 of methods no definition is there
  *
  *  @author  Rishikesh Mhatre
  *  @version 1.0

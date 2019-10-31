@@ -19,13 +19,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.bridgelabz.fundoo.user.common.Constant;
 import com.bridgelabz.fundoo.user.exception.custom.ForgotPasswordException;
 import com.bridgelabz.fundoo.user.exception.custom.LoginException;
 import com.bridgelabz.fundoo.user.exception.custom.RegisterException;
 import com.bridgelabz.fundoo.user.exception.custom.RegisterVerifyException;
 import com.bridgelabz.fundoo.user.exception.custom.SetPasswordException;
 import com.bridgelabz.fundoo.user.response.Response;
+import com.bridgelabz.fundoo.user.utility.Constant;
 
 @ControllerAdvice
 public class GlobalException {

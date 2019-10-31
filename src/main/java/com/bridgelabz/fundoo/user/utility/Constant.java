@@ -8,7 +8,7 @@
  *
  ******************************************************************************/
 
-package com.bridgelabz.fundoo.user.common;
+package com.bridgelabz.fundoo.user.utility;
 
 public class Constant {
 	/**
@@ -47,6 +47,7 @@ public class Constant {
 	public final static String EMAIL_NOT_FOUND = " not found is database";
 
 	// token key
+	public final static String KEY_LOGIN = "loginkey";
 	public final static String KEY_REGISTER_VERIFY = "verifykey";
 	public final static String KEY_SET_PASSWORD = "secretkey";
 

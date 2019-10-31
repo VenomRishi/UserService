@@ -13,8 +13,6 @@ package com.bridgelabz.fundoo.user.utility;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 
-import com.bridgelabz.fundoo.user.common.Constant;
-
 @Component
 public class UserUtility {
 

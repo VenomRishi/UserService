@@ -3,7 +3,7 @@
  *
  *  @author  Rishikesh Mhatre
  *  @version 1.0
- *  @since   21-10-2019
+ *  @since   30-10-2019
  *
  ******************************************************************************/
 
@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.bridgelabz.fundoo.user.common.Constant;
 import com.bridgelabz.fundoo.user.response.Response;
+import com.bridgelabz.fundoo.user.utility.Constant;
 
 @RestControllerAdvice
 public class ValidationException extends ResponseEntityExceptionHandler {

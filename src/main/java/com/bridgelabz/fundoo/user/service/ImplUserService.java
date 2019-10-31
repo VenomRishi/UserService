@@ -19,7 +19,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import com.bridgelabz.fundoo.user.common.Constant;
 import com.bridgelabz.fundoo.user.configuration.UserConfiguration;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
@@ -32,10 +31,10 @@ import com.bridgelabz.fundoo.user.exception.custom.SetPasswordException;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
 import com.bridgelabz.fundoo.user.response.Response;
+import com.bridgelabz.fundoo.user.utility.Constant;
 import com.bridgelabz.fundoo.user.utility.TokenUtility;
 import com.bridgelabz.fundoo.user.utility.UserUtility;
 import io.jsonwebtoken.Claims;
-
 
 @Service
 public class ImplUserService implements IUserService {
@@ -66,12 +65,13 @@ public class ImplUserService implements IUserService {
 	@Override
 	public Response login(LoginDTO loginDTO) {
 		LOG.info(Constant.SERVICE_LOGIN_METHOD);
-
+		int key;
 		if (userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(loginDTO.getEmail())
 				&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()) && i.isActive())) {
+			key = userRepository.findByEmail(loginDTO.getEmail()).get().getUid();
 			LOG.info(Constant.SUCCESS_LOGIN);
-			return new Response(200, Constant.SUCCESS_LOGIN, true);
-
+			return new Response(200, Constant.SUCCESS_LOGIN,
+					TokenUtility.buildToken(String.valueOf(key), Constant.KEY_LOGIN));
 		}
 
 		else {
@@ -112,7 +112,7 @@ public class ImplUserService implements IUserService {
 			LOG.error(registerDTO.getEmail() + Constant.REGISTER_EMAIL_FOUND);
 			throw new RegisterException(registerDTO.getEmail() + Constant.REGISTER_EMAIL_FOUND);
 		}
-		
+
 		registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
 		User user = config.modelMapper().map(registerDTO, User.class);
 		registerVerificationSendEmail(registerDTO.getEmail());

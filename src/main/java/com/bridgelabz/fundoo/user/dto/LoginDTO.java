@@ -17,8 +17,13 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import com.bridgelabz.fundoo.user.common.Constant;
+import com.bridgelabz.fundoo.user.utility.Constant;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class LoginDTO {
 
 	@NotEmpty(message = Constant.VALIDATE_EMAIL)
@@ -28,21 +33,5 @@ public class LoginDTO {
 	@Size(min = 6, max = 30)
 	@NotEmpty(message = Constant.VALIDATE_PASSWORD)
 	private String password;
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
 
 }
