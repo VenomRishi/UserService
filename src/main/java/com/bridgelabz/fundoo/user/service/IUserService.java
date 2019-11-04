@@ -12,6 +12,7 @@
 
 package com.bridgelabz.fundoo.user.service;
 
+import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
 import com.bridgelabz.fundoo.user.dto.SetPasswordDTO;
@@ -94,5 +95,17 @@ public interface IUserService {
 	 * @return returns Response which contains the response of the method
 	 */
 	Response setPassword(SetPasswordDTO setPasswordDTO);
+
+	/**
+	 * Purpose: this method is used to upload the user profile picture
+	 * 
+	 * @param image this is MultipartFile coming from the user end
+	 * 
+	 * @param email this parameter helps to specify on which user needs to set the
+	 *              profile picture
+	 * 
+	 * @return returns Response which contains the response of the method
+	 */
+	Response upload(MultipartFile image, String email) throws Exception;
 
 }

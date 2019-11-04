@@ -24,6 +24,7 @@ import com.bridgelabz.fundoo.user.exception.custom.LoginException;
 import com.bridgelabz.fundoo.user.exception.custom.RegisterException;
 import com.bridgelabz.fundoo.user.exception.custom.RegisterVerifyException;
 import com.bridgelabz.fundoo.user.exception.custom.SetPasswordException;
+import com.bridgelabz.fundoo.user.exception.custom.UserException;
 import com.bridgelabz.fundoo.user.response.Response;
 import com.bridgelabz.fundoo.user.utility.Constant;
 
@@ -136,6 +137,12 @@ public class GlobalException {
 	@ExceptionHandler(SetPasswordException.class)
 	public ResponseEntity<Response> setPasswordExceptionHandler(SetPasswordException ex) {
 		return new ResponseEntity<>(new Response(Constant.HTTP_STATUS_BAD_REQUEST, ex.getMessage(), null),
+				HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(UserException.class)
+	public ResponseEntity<Response> userException(UserException ex) {
+		return new ResponseEntity<Response>(new Response(Constant.HTTP_STATUS_BAD_REQUEST, ex.getMessage(), null),
 				HttpStatus.BAD_REQUEST);
 	}
 

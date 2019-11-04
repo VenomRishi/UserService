@@ -54,6 +54,9 @@ public class User {
 	@NotNull
 	private String password;
 
+	@Column(name = "u_profile")
+	private String profile;
+
 	@Column(name = "u_reg_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	@CreationTimestamp

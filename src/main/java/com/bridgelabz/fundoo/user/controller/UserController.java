@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
@@ -140,6 +142,26 @@ public class UserController {
 	public ResponseEntity<Response> setPassword(@RequestBody SetPasswordDTO setPasswordDTO) {
 		LOG.info(Constant.CONTROLLER_SET_PASSWORD_METHOD);
 		return new ResponseEntity<>(service.setPassword(setPasswordDTO), HttpStatus.OK);
+	}
+
+	/**
+	 * Purpose: this API(application programming interface) is created for upload
+	 * image for the profile picture of the user and this will store image into the
+	 * path and maintain the location into database
+	 * 
+	 * @param image this is MultipartFile coming from the user end
+	 * 
+	 * @param email this parameter helps to specify on which user needs to set the
+	 *              profile picture
+	 * 
+	 * @return ResponseEntity which is holding the String and HttpStatus in that
+	 *         entity
+	 * @throws Exception
+	 */
+	@PutMapping("/upload")
+	public ResponseEntity<Response> upload(@RequestParam(name = "file") MultipartFile image,
+			@RequestHeader(name = "email") String email) throws Exception {
+		return new ResponseEntity<Response>(service.upload(image, email), HttpStatus.OK);
 	}
 
 }

@@ -12,13 +12,15 @@
 
 package com.bridgelabz.fundoo.user.service;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.fundoo.user.configuration.UserConfiguration;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
@@ -28,13 +30,13 @@ import com.bridgelabz.fundoo.user.exception.custom.LoginException;
 import com.bridgelabz.fundoo.user.exception.custom.RegisterException;
 import com.bridgelabz.fundoo.user.exception.custom.RegisterVerifyException;
 import com.bridgelabz.fundoo.user.exception.custom.SetPasswordException;
+import com.bridgelabz.fundoo.user.exception.custom.UserException;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
 import com.bridgelabz.fundoo.user.response.Response;
 import com.bridgelabz.fundoo.user.utility.Constant;
 import com.bridgelabz.fundoo.user.utility.TokenUtility;
 import com.bridgelabz.fundoo.user.utility.UserUtility;
-
 
 import io.jsonwebtoken.Claims;
 
@@ -226,6 +228,36 @@ public class ImplUserService implements IUserService {
 		LOG.info(Constant.SUCCESS_SET_PASSWORD);
 		return new Response(200, Constant.SUCCESS_SET_PASSWORD, userRepository.save(user));
 
+	}
+
+	/**
+	 * Purpose: this method is used to upload the user profile picture
+	 * 
+	 * @param image this is MultipartFile coming from the user end
+	 * 
+	 * @param email this parameter helps to specify on which user needs to set the
+	 *              profile picture
+	 * 
+	 * @return returns Response which contains the response of the method
+	 * @throws IOException
+	 */
+	@Override
+	public Response upload(MultipartFile image, String email) throws Exception {
+		LOG.info(Constant.SERVICE_UPLOAD_PROFILE);
+		User user = userRepository.findByEmail(email).orElse(null);
+		if (user == null) {
+			LOG.info(email + Constant.EMAIL_NOT_FOUND);
+			throw new ForgotPasswordException(email + Constant.EMAIL_NOT_FOUND);
+		}
+		if (image != null && image.getContentType() != null
+				&& !image.getContentType().toLowerCase().startsWith("image"))
+			throw new UserException(Constant.IMAGE_FORMAT_EXCEPTION);
+		FileOutputStream output = new FileOutputStream(Constant.UPLOAD_FOLDER + email + image.getOriginalFilename());
+		output.write(image.getBytes());
+		user.setProfile(Constant.UPLOAD_FOLDER + email + image.getOriginalFilename());
+
+		output.close();
+		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
 	}
 
 }

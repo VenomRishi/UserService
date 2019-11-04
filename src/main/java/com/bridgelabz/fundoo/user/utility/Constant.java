@@ -19,6 +19,7 @@ public class Constant {
 	public final static String BASE_URL = "http://localhost:8080/user/";
 	public final static String SET_URI = "setpassword/";
 	public final static String VERIFY_URI = "verify/";
+	public final static String UPLOAD_FOLDER = "/home/admin1/Documents/workspace-spring/UserService/uploads/";
 
 	// method related message
 	public final static String SERVICE_LOGIN_METHOD = "method: login service";
@@ -27,6 +28,7 @@ public class Constant {
 	public final static String SERVICE_VERIFY_USER_METHOD = "method: verify service";
 	public final static String SERVICE_FORGOT_PASSWORD_METHOD = "method: forgot password service";
 	public final static String SERVICE_SET_PASSWORD_METHOD = "method: set password service";
+	public final static String SERVICE_UPLOAD_PROFILE = "method: upload profile pic";
 
 	public final static String CONTROLLER_REGISTER_METHOD = "register controller API";
 	public final static String CONTROLLER_VERIFY_REGISTER_METHOD = "verify registration controller API";
@@ -45,6 +47,8 @@ public class Constant {
 	public final static String FAILED_TO_SET_PASSWORD = "unable to set new password due to there's not email associated with your token";
 	public final static String REGISTER_EMAIL_FOUND = "not found record ith this email cannot able to create new entry with this email";
 	public final static String EMAIL_NOT_FOUND = " not found is database";
+	public final static String UPLOAD_SUCCESS = "upload pic successfull";
+	public final static String IMAGE_FORMAT_EXCEPTION = "Please upload proper image";
 
 	// token key
 	public final static String KEY_LOGIN = "loginkey";
