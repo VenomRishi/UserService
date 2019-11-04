@@ -32,6 +32,7 @@ target/
 /.nb-gradle/
 build/
 /uploads/
+uploads/
 
 ### VS Code ###
 .vscode/
