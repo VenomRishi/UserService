@@ -18,8 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.fundoo.user.configuration.UserConfiguration;
@@ -32,12 +30,12 @@ import com.bridgelabz.fundoo.user.exception.custom.RegisterException;
 import com.bridgelabz.fundoo.user.exception.custom.RegisterVerifyException;
 import com.bridgelabz.fundoo.user.exception.custom.SetPasswordException;
 import com.bridgelabz.fundoo.user.exception.custom.UserException;
+import com.bridgelabz.fundoo.user.model.RabbitMQBody;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
 import com.bridgelabz.fundoo.user.response.Response;
 import com.bridgelabz.fundoo.user.utility.Constant;
 import com.bridgelabz.fundoo.user.utility.TokenUtility;
-import com.bridgelabz.fundoo.user.utility.UserUtility;
 
 import io.jsonwebtoken.Claims;
 
@@ -51,12 +49,6 @@ public class ImplUserService implements IUserService {
 
 	@Autowired
 	private UserConfiguration config;
-
-	@Autowired
-	private JavaMailSender javaMailSender;
-
-	@Autowired
-	private UserUtility userUtility;
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
@@ -125,14 +117,17 @@ public class ImplUserService implements IUserService {
 		User user = config.modelMapper().map(registerDTO, User.class);
 		String token = TokenUtility.buildToken(registerDTO.getEmail(), Constant.KEY_REGISTER_VERIFY);
 		// code for sending email in RABBITMQ queue
-		LOG.info(Constant.QUEUE_NAME, Constant.BASE_URL + Constant.VERIFY_URI + token);
-		rabbitTemplate.convertAndSend(Constant.QUEUE_NAME, token);
+
+		RabbitMQBody rabbitMQBody = new RabbitMQBody();
+		rabbitMQBody.setEmail(registerDTO.getEmail());
+		rabbitMQBody.setSubject(Constant.EMAIL_SUBJECT_VERIFY);
+		rabbitMQBody.setBody(Constant.BASE_URL + Constant.VERIFY_URI + token);
+
+		rabbitTemplate.convertAndSend(Constant.ROUTING_KEY, rabbitMQBody);
 		// registerVerificationSendEmail(registerDTO.getEmail());
 		LOG.info(Constant.SUCCESS_REGISTER);
 		return new Response(200, Constant.SUCCESS_REGISTER, userRepository.save(user));
 	}
-
-	
 
 	/**
 	 * Purpose: method for verification account when new user register themselve's
@@ -185,8 +180,14 @@ public class ImplUserService implements IUserService {
 		}
 		// code for sending email to recipient
 		String token = TokenUtility.buildToken(email, Constant.KEY_SET_PASSWORD);
-		SimpleMailMessage sampleMailMessage = userUtility.sendMail(email, token);
-		javaMailSender.send(sampleMailMessage);
+
+		RabbitMQBody rabbitMQBody = new RabbitMQBody();
+		rabbitMQBody.setEmail(email);
+		rabbitMQBody.setSubject(Constant.EMAIL_SUBJECT_SETPASSWORD);
+		rabbitMQBody.setBody(Constant.BASE_URL + Constant.SET_URI + token);
+
+		rabbitTemplate.convertAndSend(Constant.ROUTING_KEY, rabbitMQBody);
+
 		LOG.info(Constant.EMAIL_SEND_FOR_FORGOT_PASSWORD);
 		return new Response(200, Constant.EMAIL_SEND_FOR_FORGOT_PASSWORD, null);
 

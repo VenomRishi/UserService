@@ -77,7 +77,9 @@ public class Constant {
 
 	// rabbitmq related
 	public final static String QUEUE_NAME = "user_service";
+	public final static String ROUTING_KEY = "user_service";
 	public final static String MESSAGE_QUEUE_EXCHANGE="message_queue_exchange";
 	public final static String MESSAGE_RECEIVED="Message Received: ";
+	
 
 }
