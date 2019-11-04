@@ -51,18 +51,6 @@ public interface IUserService {
 	Response register(RegisterDTO registerDTO);
 
 	/**
-	 * Purpose: method is created for sending the email for activating the user
-	 * account user only login to account only if user account is activated if the
-	 * user wants to activate the account then he/she has to verify the email
-	 * verification link
-	 * 
-	 * @param email from where the user wants to send email this parameter comes
-	 *              from the user registration form
-	 * 
-	 */
-	void registerVerificationSendEmail(String email);
-
-	/**
 	 * Purpose: method for verification account when new user register themselve's
 	 * then the system generated mail is send to that particular user and when user
 	 * goes to that mail and click the verification link then user account gets

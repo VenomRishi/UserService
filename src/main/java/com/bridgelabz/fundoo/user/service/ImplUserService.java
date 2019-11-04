@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -56,6 +57,9 @@ public class ImplUserService implements IUserService {
 
 	@Autowired
 	private UserUtility userUtility;
+
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
 
 	/**
 	 * Purpose: method for login the user into the system
@@ -119,31 +123,16 @@ public class ImplUserService implements IUserService {
 
 		registerDTO.setPassword(config.passwordEncoder().encode(registerDTO.getPassword()));
 		User user = config.modelMapper().map(registerDTO, User.class);
-		registerVerificationSendEmail(registerDTO.getEmail());
+		String token = TokenUtility.buildToken(registerDTO.getEmail(), Constant.KEY_REGISTER_VERIFY);
+		// code for sending email in RABBITMQ queue
+		LOG.info(Constant.QUEUE_NAME, Constant.BASE_URL + Constant.VERIFY_URI + token);
+		rabbitTemplate.convertAndSend(Constant.QUEUE_NAME, token);
+		// registerVerificationSendEmail(registerDTO.getEmail());
 		LOG.info(Constant.SUCCESS_REGISTER);
 		return new Response(200, Constant.SUCCESS_REGISTER, userRepository.save(user));
 	}
 
-	/**
-	 * Purpose: method is created for sending the email for activating the user
-	 * account user only login to account only if user account is activated if the
-	 * user wants to activate the account then he/she has to verify the email
-	 * verification link
-	 * 
-	 * @param email from where the user wants to send email this parameter comes
-	 *              from the user registration form
-	 */
-	@Override
-	public void registerVerificationSendEmail(String email) {
-		LOG.info(Constant.SERVICE_REGISTER_VERIFICATION_METHOD);
-
-		// code for sending email to recipient
-		String token = TokenUtility.buildToken(email, Constant.KEY_REGISTER_VERIFY);
-		SimpleMailMessage sampleMailMessage = userUtility.sendMailForRegistrationVerification(email, token);
-		javaMailSender.send(sampleMailMessage);
-		LOG.info(Constant.EMAIL_SEND);
-
-	}
+	
 
 	/**
 	 * Purpose: method for verification account when new user register themselve's

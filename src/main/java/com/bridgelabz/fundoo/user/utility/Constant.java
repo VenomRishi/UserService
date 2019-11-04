@@ -75,4 +75,9 @@ public class Constant {
 	public final static int HTTP_STATUS_BAD_REQUEST = 400;
 	public final static int HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
 
+	// rabbitmq related
+	public final static String QUEUE_NAME = "user_service";
+	public final static String MESSAGE_QUEUE_EXCHANGE="message_queue_exchange";
+	public final static String MESSAGE_RECEIVED="Message Received: ";
+
 }
