@@ -29,6 +29,7 @@ public class Constant {
 	public final static String SERVICE_FORGOT_PASSWORD_METHOD = "method: forgot password service";
 	public final static String SERVICE_SET_PASSWORD_METHOD = "method: set password service";
 	public final static String SERVICE_UPLOAD_PROFILE = "method: upload profile pic";
+	public final static String SERVICE_UPDATE_UPLOAD_PROFILE = "method: update upload profile pic";
 
 	public final static String CONTROLLER_REGISTER_METHOD = "register controller API";
 	public final static String CONTROLLER_VERIFY_REGISTER_METHOD = "verify registration controller API";
@@ -49,6 +50,7 @@ public class Constant {
 	public final static String EMAIL_NOT_FOUND = " not found is database";
 	public final static String UPLOAD_SUCCESS = "upload pic successfull";
 	public final static String IMAGE_FORMAT_EXCEPTION = "Please upload proper image";
+	public final static String IMAGE_UPDATE_FAILED="Please upload pic first to update pic";
 
 	// token key
 	public final static String KEY_LOGIN = "loginkey";

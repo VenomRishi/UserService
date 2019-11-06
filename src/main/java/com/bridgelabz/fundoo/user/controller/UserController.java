@@ -12,6 +12,8 @@
 
 package com.bridgelabz.fundoo.user.controller;
 
+import java.io.IOException;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -162,6 +165,43 @@ public class UserController {
 	public ResponseEntity<Response> upload(@RequestParam(name = "file") MultipartFile image,
 			@RequestHeader(name = "email") String email) throws Exception {
 		return new ResponseEntity<Response>(service.upload(image, email), HttpStatus.OK);
+	}
+
+	/**
+	 * Purpose: this API(application programming interface) is created for update
+	 * upload image for the profile picture of the user and this will store image
+	 * into the path and maintain the location into database
+	 * 
+	 * @param image this is MultipartFile coming from the user end
+	 * 
+	 * @param email this parameter helps to specify on which user needs to set the
+	 *              profile picture
+	 * 
+	 * @return ResponseEntity which is holding the String and HttpStatus in that
+	 *         entity
+	 * @throws IOException handles the IOException
+	 */
+	@PutMapping("/updateupload")
+	public ResponseEntity<Response> updateUpload(@RequestParam(name = "file") MultipartFile image,
+			@RequestHeader(name = "email") String email) throws Exception {
+		return new ResponseEntity<Response>(service.updateUpload(image, email), HttpStatus.OK);
+	}
+
+	/**
+	 * Purpose: this API(application programming interface) is created for delete
+	 * image for the profile picture of the user and this will store image into the
+	 * path and maintain the location into database
+	 * 
+	 * @param email this parameter helps to specify on which user needs to set the
+	 *              profile picture
+	 * @return ResponseEntity which is holding the String and HttpStatus in that
+	 *         entity
+	 * @throws IOException handles the IOException
+	 */
+	@DeleteMapping
+	public ResponseEntity<Response> deleteProfile(@RequestHeader(name = "email") String email) throws IOException {
+		return new ResponseEntity<Response>(service.deleteProfile(email), HttpStatus.OK);
+
 	}
 
 }

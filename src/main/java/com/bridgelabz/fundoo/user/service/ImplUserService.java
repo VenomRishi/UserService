@@ -14,6 +14,10 @@ package com.bridgelabz.fundoo.user.service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -247,6 +251,62 @@ public class ImplUserService implements IUserService {
 		user.setProfile(Constant.UPLOAD_FOLDER + email + image.getOriginalFilename());
 
 		output.close();
+		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
+	}
+
+	/**
+	 * Purpose: this method is used to update upload the user profile picture
+	 * 
+	 * @param image this is MultipartFile coming from the user end
+	 * 
+	 * @param email this parameter helps to specify on which user needs to set the
+	 *              profile picture
+	 * 
+	 * @return returns Response which contains the response of the method
+	 */
+	@Override
+	public Response updateUpload(MultipartFile image, String email) throws Exception {
+		LOG.info(Constant.SERVICE_UPDATE_UPLOAD_PROFILE);
+		User user = userRepository.findByEmail(email).orElse(null);
+		if (user == null) {
+			LOG.info(email + Constant.EMAIL_NOT_FOUND);
+			throw new ForgotPasswordException(email + Constant.EMAIL_NOT_FOUND);
+		}
+		if (user.getProfile().isEmpty())
+			throw new UserException(Constant.IMAGE_UPDATE_FAILED);
+
+		if (image != null && image.getContentType() != null
+				&& !image.getContentType().toLowerCase().startsWith("image"))
+			throw new UserException(Constant.IMAGE_FORMAT_EXCEPTION);
+		FileOutputStream output = new FileOutputStream(Constant.UPLOAD_FOLDER + email + image.getOriginalFilename());
+		output.write(image.getBytes());
+		user.setProfile(Constant.UPLOAD_FOLDER + email + image.getOriginalFilename());
+
+		output.close();
+		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
+	}
+
+	/**
+	 * Purpose: this method is used to delete profile picture from the user profile
+	 * picture
+	 * 
+	 * @param email this parameter helps to specify on which user needs to set the
+	 *              profile picture
+	 * 
+	 * @return returns Response which contains the response of the method
+	 * @throws IOException
+	 */
+	@Override
+	public Response deleteProfile(String email) throws IOException {
+		LOG.info(Constant.SERVICE_UPDATE_UPLOAD_PROFILE);
+		User user = userRepository.findByEmail(email).orElse(null);
+		if (user == null) {
+			LOG.info(email + Constant.EMAIL_NOT_FOUND);
+			throw new ForgotPasswordException(email + Constant.EMAIL_NOT_FOUND);
+		}
+		Path path = Paths.get(user.getProfile());
+		Files.delete(path);
+		user.setProfile(null);
 		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
 	}
 

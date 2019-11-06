@@ -12,6 +12,8 @@
 
 package com.bridgelabz.fundoo.user.service;
 
+import java.io.IOException;
+
 import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
@@ -95,5 +97,29 @@ public interface IUserService {
 	 * @return returns Response which contains the response of the method
 	 */
 	Response upload(MultipartFile image, String email) throws Exception;
+
+	/**
+	 * Purpose: this method is used to update upload the user profile picture
+	 * 
+	 * @param image this is MultipartFile coming from the user end
+	 * 
+	 * @param email this parameter helps to specify on which user needs to set the
+	 *              profile picture
+	 * 
+	 * @return returns Response which contains the response of the method
+	 */
+	Response updateUpload(MultipartFile image, String email) throws Exception;
+
+	/**
+	 * Purpose: this method is used to delete profile picture from the user profile
+	 * picture
+	 * 
+	 * @param email this parameter helps to specify on which user needs to set the
+	 *              profile picture
+	 * 
+	 * @return returns Response which contains the response of the method
+	 * @throws IOException
+	 */
+	Response deleteProfile(String email) throws IOException;
 
 }
