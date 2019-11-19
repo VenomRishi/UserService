@@ -1,3 +1,13 @@
+/******************************************************************************
+ *  Purpose: Class is implemented for creating the POJO class which will holds
+ *  		 the rabbitMQ payload
+ *
+ *  @author  Rishikesh Mhatre
+ *  @version 1.0
+ *  @since   04-11-2019
+ *
+ ******************************************************************************/
+
 package com.bridgelabz.fundoo.user.model;
 
 import java.io.Serializable;

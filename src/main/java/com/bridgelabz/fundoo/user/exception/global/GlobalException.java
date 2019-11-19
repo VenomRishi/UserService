@@ -140,6 +140,18 @@ public class GlobalException {
 				HttpStatus.BAD_REQUEST);
 	}
 
+	/**
+	 * Purpose: this method is created for handle the set password exception request
+	 * which can occur while running the application
+	 * 
+	 * @param ex this parameter will be exception which will going to help for to
+	 *           responds back to client side even if application is throwing
+	 *           exception
+	 * @return ResponseEntity<Response> this is response entity which will give the
+	 *         proper response to client side application in this ResponseEntity we
+	 *         are going to attach Response which holds status code, message and
+	 *         data
+	 */
 	@ExceptionHandler(UserException.class)
 	public ResponseEntity<Response> userException(UserException ex) {
 		return new ResponseEntity<Response>(new Response(Constant.HTTP_STATUS_BAD_REQUEST, ex.getMessage(), null),

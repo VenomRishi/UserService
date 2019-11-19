@@ -21,7 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +42,7 @@ import com.bridgelabz.fundoo.user.utility.Constant;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin
 public class UserController {
 
 	@Autowired
@@ -119,7 +122,7 @@ public class UserController {
 	 * @return ResponseEntity which is holding the String and HttpStatus in that
 	 *         entity
 	 */
-	@PostMapping("/forgetpassword")
+	@PutMapping("/forgetpassword")
 	public ResponseEntity<Response> forgotPassword(@RequestHeader(name = "email") String email) {
 		LOG.info(Constant.CONTROLLER_FORGOT_PASSWORD_METHOD);
 		return new ResponseEntity<>(service.forgotPassword(email), HttpStatus.OK);
@@ -142,9 +145,10 @@ public class UserController {
 	 *         entity
 	 */
 	@PutMapping("/setpassword")
-	public ResponseEntity<Response> setPassword(@RequestBody SetPasswordDTO setPasswordDTO) {
+	public ResponseEntity<Response> setPassword(@RequestHeader(name = "token") String token,
+			@RequestBody SetPasswordDTO setPasswordDTO) {
 		LOG.info(Constant.CONTROLLER_SET_PASSWORD_METHOD);
-		return new ResponseEntity<>(service.setPassword(setPasswordDTO), HttpStatus.OK);
+		return new ResponseEntity<>(service.setPassword(token, setPasswordDTO), HttpStatus.OK);
 	}
 
 	/**
@@ -201,7 +205,11 @@ public class UserController {
 	@DeleteMapping
 	public ResponseEntity<Response> deleteProfile(@RequestHeader(name = "email") String email) throws IOException {
 		return new ResponseEntity<Response>(service.deleteProfile(email), HttpStatus.OK);
+	}
 
+	@GetMapping("/getall")
+	public ResponseEntity<Response> getAllUsers() {
+		return new ResponseEntity<Response>(service.getAllUsers(), HttpStatus.OK);
 	}
 
 }

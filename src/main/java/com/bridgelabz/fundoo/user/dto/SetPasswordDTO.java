@@ -30,6 +30,4 @@ public class SetPasswordDTO {
 	@NotEmpty(message = Constant.VALIDATE_PASSWORD)
 	private String password;
 
-	private String token;
-
 }

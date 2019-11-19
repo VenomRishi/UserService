@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class ImplUserService implements IUserService {
 			key = userRepository.findByEmail(loginDTO.getEmail()).get().getUid();
 			LOG.info(Constant.SUCCESS_LOGIN);
 			return new Response(200, Constant.SUCCESS_LOGIN,
-					TokenUtility.buildToken(String.valueOf(key), Constant.KEY_LOGIN));
+					TokenUtility.buildToken(String.valueOf(key), Constant.KEY_LOGIN) );
 		}
 
 		else {
@@ -125,7 +126,7 @@ public class ImplUserService implements IUserService {
 		RabbitMQBody rabbitMQBody = new RabbitMQBody();
 		rabbitMQBody.setEmail(registerDTO.getEmail());
 		rabbitMQBody.setSubject(Constant.EMAIL_SUBJECT_VERIFY);
-		rabbitMQBody.setBody(Constant.BASE_URL + Constant.VERIFY_URI + token);
+		rabbitMQBody.setBody(Constant.BASE_URL + Constant.VERIFY_URI + "?token=" + token);
 
 		rabbitTemplate.convertAndSend(Constant.ROUTING_KEY, rabbitMQBody);
 		// registerVerificationSendEmail(registerDTO.getEmail());
@@ -188,7 +189,7 @@ public class ImplUserService implements IUserService {
 		RabbitMQBody rabbitMQBody = new RabbitMQBody();
 		rabbitMQBody.setEmail(email);
 		rabbitMQBody.setSubject(Constant.EMAIL_SUBJECT_SETPASSWORD);
-		rabbitMQBody.setBody(Constant.BASE_URL + Constant.SET_URI + token);
+		rabbitMQBody.setBody(Constant.BASE_URL + Constant.SET_URI + "?token=" + token);
 
 		rabbitTemplate.convertAndSend(Constant.ROUTING_KEY, rabbitMQBody);
 
@@ -205,10 +206,10 @@ public class ImplUserService implements IUserService {
 	 * @return returns Response which contains the response of the method
 	 */
 	@Override
-	public Response setPassword(SetPasswordDTO setPasswordDTO) {
+	public Response setPassword(String token, SetPasswordDTO setPasswordDTO) {
 		LOG.info(Constant.SERVICE_SET_PASSWORD_METHOD);
 
-		Claims claims = TokenUtility.parseToken(setPasswordDTO.getToken(), Constant.KEY_SET_PASSWORD);
+		Claims claims = TokenUtility.parseToken(token, Constant.KEY_SET_PASSWORD);
 		LOG.info(claims.getSubject());
 		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
 				.orElse(null);
@@ -308,6 +309,13 @@ public class ImplUserService implements IUserService {
 		Files.delete(path);
 		user.setProfile(null);
 		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
+	}
+
+	@Override
+	public Response getAllUsers() {
+
+		return new Response(200, Constant.UPLOAD_SUCCESS,
+				userRepository.findAll().stream().collect(Collectors.toList()));
 	}
 
 }

@@ -1,13 +1,11 @@
 package com.bridgelabz.fundoo.user.service;
 
-import java.util.concurrent.CountDownLatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import com.bridgelabz.fundoo.user.model.RabbitMQBody;
 
 public class MessageReceiver {
-	private CountDownLatch countDownLatch = new CountDownLatch(1);
 
 	@Autowired
 	private JavaMailSender javaMailSender;
@@ -25,11 +23,6 @@ public class MessageReceiver {
 		simpleMailMessage.setSubject(rabbitMQBody.getSubject());
 		simpleMailMessage.setText(rabbitMQBody.getBody());
 		javaMailSender.send(simpleMailMessage);
-		countDownLatch.countDown();
-	}
-
-	public CountDownLatch getCountDownLatch() {
-		return countDownLatch;
 	}
 
 }

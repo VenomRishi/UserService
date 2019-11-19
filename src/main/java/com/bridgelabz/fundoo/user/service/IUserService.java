@@ -84,7 +84,7 @@ public interface IUserService {
 	 * 
 	 * @return returns Response which contains the response of the method
 	 */
-	Response setPassword(SetPasswordDTO setPasswordDTO);
+	Response setPassword(String token,SetPasswordDTO setPasswordDTO);
 
 	/**
 	 * Purpose: this method is used to upload the user profile picture
@@ -121,5 +121,7 @@ public interface IUserService {
 	 * @throws IOException
 	 */
 	Response deleteProfile(String email) throws IOException;
+
+	Response getAllUsers();
 
 }
