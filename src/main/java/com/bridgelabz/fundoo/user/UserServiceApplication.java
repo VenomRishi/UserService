@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import com.bridgelabz.fundoo.user.model.User;
+import com.bridgelabz.fundoo.user.entity.User;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableCaching

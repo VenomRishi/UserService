@@ -8,7 +8,7 @@
  *
  ******************************************************************************/
 
-package com.bridgelabz.fundoo.user.model;
+package com.bridgelabz.fundoo.user.entity;
 
 import java.io.Serializable;
 

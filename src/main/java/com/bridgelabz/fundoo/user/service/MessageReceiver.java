@@ -3,7 +3,8 @@ package com.bridgelabz.fundoo.user.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import com.bridgelabz.fundoo.user.model.RabbitMQBody;
+
+import com.bridgelabz.fundoo.user.entity.RabbitMQBody;
 
 public class MessageReceiver {
 
