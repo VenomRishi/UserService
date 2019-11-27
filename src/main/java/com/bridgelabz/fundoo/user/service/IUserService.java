@@ -13,7 +13,6 @@
 package com.bridgelabz.fundoo.user.service;
 
 import java.io.IOException;
-
 import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
@@ -84,7 +83,7 @@ public interface IUserService {
 	 * 
 	 * @return returns Response which contains the response of the method
 	 */
-	Response setPassword(String token,SetPasswordDTO setPasswordDTO);
+	Response setPassword(String token, SetPasswordDTO setPasswordDTO);
 
 	/**
 	 * Purpose: this method is used to upload the user profile picture
@@ -123,5 +122,15 @@ public interface IUserService {
 	Response deleteProfile(String email) throws IOException;
 
 	Response getAllUsers();
+
+	/**
+	 * Purpose: this method is used to return a single user profile
+	 * 
+	 * @param userId this is token id where service can specify which user to return
+	 *               back
+	 * 
+	 * @return returns the user object back to response
+	 */
+	Response getUser(String userId);
 
 }

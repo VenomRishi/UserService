@@ -57,6 +57,7 @@ public class ImplUserService implements IUserService {
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
+	
 
 	/**
 	 * Purpose: method for login the user into the system
@@ -316,6 +317,14 @@ public class ImplUserService implements IUserService {
 
 		return new Response(200, Constant.UPLOAD_SUCCESS,
 				userRepository.findAll().stream().collect(Collectors.toList()));
+	}
+
+	@Override
+	public Response getUser(String userId) {
+		// TODO Auto-generated method stub
+		int id= Integer.parseInt(TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject());
+		return new Response(200, Constant.UPLOAD_SUCCESS,
+				userRepository.findById(id));
 	}
 
 }

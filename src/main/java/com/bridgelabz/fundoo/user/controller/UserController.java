@@ -207,9 +207,31 @@ public class UserController {
 		return new ResponseEntity<Response>(service.deleteProfile(email), HttpStatus.OK);
 	}
 
+	/**
+	 * Purpose: this API(application programming interface) is created for getting
+	 * all the user available this API(application programming interface) is
+	 * basically implemented to give all user records to note service project where
+	 * in this project validation part should be perform
+	 * 
+	 * @return ResponseEntity which is holding the String and HttpStatus in that
+	 *         entity
+	 */
 	@GetMapping("/getall")
 	public ResponseEntity<Response> getAllUsers() {
 		return new ResponseEntity<Response>(service.getAllUsers(), HttpStatus.OK);
+	}
+
+	/**
+	 * Purpose: this API(application programming interface) is created for getting
+	 * the particular user by using JWT(JSON Web Token) token
+	 * 
+	 * @param userId this parameter will uniquely specify the user
+	 * @return ResponseEntity which is holding the String and HttpStatus in that
+	 *         entity
+	 */
+	@GetMapping("/getuser")
+	public ResponseEntity<Response> getUser(@RequestHeader(name = "userIdToken") String userId) {
+		return new ResponseEntity<Response>(service.getUser(userId), HttpStatus.OK);
 	}
 
 }
