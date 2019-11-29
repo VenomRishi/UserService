@@ -1,0 +1,6 @@
+sudo apt install elasticsearch
+sudo nano /etc/elasticsearch/elasticsearch.yml
+network.host: localhost
+sudo systemctl start elasticsearch
+sudo systemctl enable elasticsearch
+localhost:9200
