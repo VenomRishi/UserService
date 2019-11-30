@@ -17,7 +17,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,7 @@ import com.bridgelabz.fundoo.user.exception.custom.SetPasswordException;
 import com.bridgelabz.fundoo.user.exception.custom.UserException;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
 import com.bridgelabz.fundoo.user.response.Response;
+import com.bridgelabz.fundoo.user.response.UserToken;
 import com.bridgelabz.fundoo.user.utility.Constant;
 import com.bridgelabz.fundoo.user.utility.TokenUtility;
 
@@ -58,6 +62,8 @@ public class ImplUserService implements IUserService {
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 	
+	@Autowired private ServletContext context;
+	
 
 	/**
 	 * Purpose: method for login the user into the system
@@ -71,13 +77,14 @@ public class ImplUserService implements IUserService {
 	@Override
 	public Response login(LoginDTO loginDTO) {
 		LOG.info(Constant.SERVICE_LOGIN_METHOD);
-		int key;
+		User user;
 		if (userRepository.findAll().stream().anyMatch(i -> i.getEmail().equals(loginDTO.getEmail())
 				&& config.passwordEncoder().matches(loginDTO.getPassword(), i.getPassword()) && i.isActive())) {
-			key = userRepository.findByEmail(loginDTO.getEmail()).get().getUid();
+			user = userRepository.findByEmail(loginDTO.getEmail()).get();
 			LOG.info(Constant.SUCCESS_LOGIN);
 			return new Response(200, Constant.SUCCESS_LOGIN,
-					TokenUtility.buildToken(String.valueOf(key), Constant.KEY_LOGIN) );
+					new UserToken(TokenUtility.buildToken(String.valueOf(user.getUid()), Constant.KEY_LOGIN),
+							TokenUtility.buildToken(String.valueOf(user.getEmail()), Constant.KEY_LOGIN)));
 		}
 
 		else {
@@ -226,34 +233,17 @@ public class ImplUserService implements IUserService {
 
 	}
 
-	/**
-	 * Purpose: this method is used to upload the user profile picture
-	 * 
-	 * @param image this is MultipartFile coming from the user end
-	 * 
-	 * @param email this parameter helps to specify on which user needs to set the
-	 *              profile picture
-	 * 
-	 * @return returns Response which contains the response of the method
-	 * @throws IOException
-	 */
 	@Override
-	public Response upload(MultipartFile image, String email) throws Exception {
-		LOG.info(Constant.SERVICE_UPLOAD_PROFILE);
-		User user = userRepository.findByEmail(email).orElse(null);
-		if (user == null) {
-			LOG.info(email + Constant.EMAIL_NOT_FOUND);
-			throw new ForgotPasswordException(email + Constant.EMAIL_NOT_FOUND);
+	public Response getProfile(String token) {
+		LOG.info(Constant.SERVICE_GET_UPLOAD_PROFILE);
+		String email = TokenUtility.parseToken(token, Constant.KEY_LOGIN).getSubject();
+		Optional<User> user =userRepository.findByEmail(email);
+		if(!user.isPresent()) {
+			throw new UserException(Constant.EMAIL_NOT_FOUND);
 		}
-		if (image != null && image.getContentType() != null
-				&& !image.getContentType().toLowerCase().startsWith("image"))
-			throw new UserException(Constant.IMAGE_FORMAT_EXCEPTION);
-		FileOutputStream output = new FileOutputStream(Constant.UPLOAD_FOLDER + email + image.getOriginalFilename());
-		output.write(image.getBytes());
-		user.setProfile(Constant.UPLOAD_FOLDER + email + image.getOriginalFilename());
-
-		output.close();
-		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
+		String image;
+		String filePath = context.getRealPath("");
+		return null;
 	}
 
 	/**
@@ -261,18 +251,18 @@ public class ImplUserService implements IUserService {
 	 * 
 	 * @param image this is MultipartFile coming from the user end
 	 * 
-	 * @param email this parameter helps to specify on which user needs to set the
+	 * @param token this parameter helps to specify on which user needs to set the
 	 *              profile picture
 	 * 
 	 * @return returns Response which contains the response of the method
 	 */
 	@Override
-	public Response updateUpload(MultipartFile image, String email) throws Exception {
+	public Response updateProfile(MultipartFile image, String token) throws Exception {
 		LOG.info(Constant.SERVICE_UPDATE_UPLOAD_PROFILE);
-		User user = userRepository.findByEmail(email).orElse(null);
+		User user = userRepository.findByEmail(token).orElse(null);
 		if (user == null) {
-			LOG.info(email + Constant.EMAIL_NOT_FOUND);
-			throw new ForgotPasswordException(email + Constant.EMAIL_NOT_FOUND);
+			LOG.info(token + Constant.EMAIL_NOT_FOUND);
+			throw new ForgotPasswordException(token + Constant.EMAIL_NOT_FOUND);
 		}
 		if (user.getProfile().isEmpty())
 			throw new UserException(Constant.IMAGE_UPDATE_FAILED);
@@ -280,9 +270,9 @@ public class ImplUserService implements IUserService {
 		if (image != null && image.getContentType() != null
 				&& !image.getContentType().toLowerCase().startsWith("image"))
 			throw new UserException(Constant.IMAGE_FORMAT_EXCEPTION);
-		FileOutputStream output = new FileOutputStream(Constant.UPLOAD_FOLDER + email + image.getOriginalFilename());
+		FileOutputStream output = new FileOutputStream(Constant.UPLOAD_FOLDER + token + image.getOriginalFilename());
 		output.write(image.getBytes());
-		user.setProfile(Constant.UPLOAD_FOLDER + email + image.getOriginalFilename());
+		user.setProfile(Constant.UPLOAD_FOLDER + token + image.getOriginalFilename());
 
 		output.close();
 		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
@@ -326,5 +316,7 @@ public class ImplUserService implements IUserService {
 		return new Response(200, Constant.UPLOAD_SUCCESS,
 				userRepository.findById(id));
 	}
+
+	
 
 }

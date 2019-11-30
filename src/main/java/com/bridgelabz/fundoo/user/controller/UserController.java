@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -151,24 +150,9 @@ public class UserController {
 		return new ResponseEntity<>(service.setPassword(token, setPasswordDTO), HttpStatus.OK);
 	}
 
-	/**
-	 * Purpose: this API(application programming interface) is created for upload
-	 * image for the profile picture of the user and this will store image into the
-	 * path and maintain the location into database
-	 * 
-	 * @param image this is MultipartFile coming from the user end
-	 * 
-	 * @param email this parameter helps to specify on which user needs to set the
-	 *              profile picture
-	 * 
-	 * @return ResponseEntity which is holding the String and HttpStatus in that
-	 *         entity
-	 * @throws Exception
-	 */
-	@PutMapping("/upload")
-	public ResponseEntity<Response> upload(@RequestParam(name = "file") MultipartFile image,
-			@RequestHeader(name = "email") String email) throws Exception {
-		return new ResponseEntity<Response>(service.upload(image, email), HttpStatus.OK);
+	@GetMapping("/getprofile")
+	public ResponseEntity<Response> getProfile(@RequestHeader(name = "userEmailToken") String token) {
+		return new ResponseEntity<Response>(service.getProfile(token), HttpStatus.OK);
 	}
 
 	/**
@@ -178,17 +162,17 @@ public class UserController {
 	 * 
 	 * @param image this is MultipartFile coming from the user end
 	 * 
-	 * @param email this parameter helps to specify on which user needs to set the
+	 * @param token this parameter helps to specify on which user needs to set the
 	 *              profile picture
 	 * 
 	 * @return ResponseEntity which is holding the String and HttpStatus in that
 	 *         entity
 	 * @throws IOException handles the IOException
 	 */
-	@PutMapping("/updateupload")
-	public ResponseEntity<Response> updateUpload(@RequestParam(name = "file") MultipartFile image,
-			@RequestHeader(name = "email") String email) throws Exception {
-		return new ResponseEntity<Response>(service.updateUpload(image, email), HttpStatus.OK);
+	@PutMapping("/updateprofile")
+	public ResponseEntity<Response> updateProfile(@RequestParam(name = "file") MultipartFile image,
+			@RequestHeader(name = "userEmailToken") String token) throws Exception {
+		return new ResponseEntity<Response>(service.updateProfile(image, token), HttpStatus.OK);
 	}
 
 	/**
@@ -196,15 +180,15 @@ public class UserController {
 	 * image for the profile picture of the user and this will store image into the
 	 * path and maintain the location into database
 	 * 
-	 * @param email this parameter helps to specify on which user needs to set the
+	 * @param token this parameter helps to specify on which user needs to set the
 	 *              profile picture
 	 * @return ResponseEntity which is holding the String and HttpStatus in that
 	 *         entity
 	 * @throws IOException handles the IOException
 	 */
-	@DeleteMapping
-	public ResponseEntity<Response> deleteProfile(@RequestHeader(name = "email") String email) throws IOException {
-		return new ResponseEntity<Response>(service.deleteProfile(email), HttpStatus.OK);
+	@PutMapping("/deleteprofile")
+	public ResponseEntity<Response> deleteProfile(@RequestHeader(name = "userEmailToken") String token) throws IOException {
+		return new ResponseEntity<Response>(service.deleteProfile(token), HttpStatus.OK);
 	}
 
 	/**

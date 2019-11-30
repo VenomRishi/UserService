@@ -86,16 +86,14 @@ public interface IUserService {
 	Response setPassword(String token, SetPasswordDTO setPasswordDTO);
 
 	/**
-	 * Purpose: this method is used to upload the user profile picture
+	 * Purpose: this method is used to get uploaded user profile picture
 	 * 
-	 * @param image this is MultipartFile coming from the user end
-	 * 
-	 * @param email this parameter helps to specify on which user needs to set the
+	 * @param email this parameter helps to specify on which user needs to get the
 	 *              profile picture
-	 * 
-	 * @return returns Response which contains the response of the method
+	 * @return returns Response which contains the response of the method in the
+	 *         proper form
 	 */
-	Response upload(MultipartFile image, String email) throws Exception;
+	Response getProfile(String email);
 
 	/**
 	 * Purpose: this method is used to update upload the user profile picture
@@ -107,7 +105,7 @@ public interface IUserService {
 	 * 
 	 * @return returns Response which contains the response of the method
 	 */
-	Response updateUpload(MultipartFile image, String email) throws Exception;
+	Response updateProfile(MultipartFile image, String email) throws Exception;
 
 	/**
 	 * Purpose: this method is used to delete profile picture from the user profile

@@ -30,6 +30,7 @@ public class Constant {
 	public final static String SERVICE_SET_PASSWORD_METHOD = "method: set password service";
 	public final static String SERVICE_UPLOAD_PROFILE = "method: upload profile pic";
 	public final static String SERVICE_UPDATE_UPLOAD_PROFILE = "method: update upload profile pic";
+	public final static String SERVICE_GET_UPLOAD_PROFILE = "method: get upload profile pic";
 
 	public final static String CONTROLLER_REGISTER_METHOD = "register controller API";
 	public final static String CONTROLLER_VERIFY_REGISTER_METHOD = "verify registration controller API";
@@ -50,7 +51,7 @@ public class Constant {
 	public final static String EMAIL_NOT_FOUND = " not found is database";
 	public final static String UPLOAD_SUCCESS = "upload pic successfull";
 	public final static String IMAGE_FORMAT_EXCEPTION = "Please upload proper image";
-	public final static String IMAGE_UPDATE_FAILED="Please upload pic first to update pic";
+	public final static String IMAGE_UPDATE_FAILED = "Please upload pic first to update pic";
 
 	// token key
 	public final static String KEY_LOGIN = "loginkey";
@@ -80,8 +81,7 @@ public class Constant {
 	// rabbitmq related
 	public final static String QUEUE_NAME = "user_service";
 	public final static String ROUTING_KEY = "user_service";
-	public final static String MESSAGE_QUEUE_EXCHANGE="message_queue_exchange";
-	public final static String MESSAGE_RECEIVED="Message Received: ";
-	
+	public final static String MESSAGE_QUEUE_EXCHANGE = "message_queue_exchange";
+	public final static String MESSAGE_RECEIVED = "Message Received: ";
 
 }
