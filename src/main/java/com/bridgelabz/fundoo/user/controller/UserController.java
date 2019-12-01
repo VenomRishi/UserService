@@ -172,6 +172,8 @@ public class UserController {
 	@PutMapping("/updateprofile")
 	public ResponseEntity<Response> updateProfile(@RequestParam(name = "file") MultipartFile image,
 			@RequestHeader(name = "userEmailToken") String token) throws Exception {
+		LOG.info(Constant.CONTROLLER_UPLOAD_PROFILE);
+		System.out.println(image+ " "+ token);
 		return new ResponseEntity<Response>(service.updateProfile(image, token), HttpStatus.OK);
 	}
 

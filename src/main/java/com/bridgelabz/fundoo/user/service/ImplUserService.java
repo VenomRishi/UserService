@@ -12,16 +12,18 @@
 
 package com.bridgelabz.fundoo.user.service;
 
-import java.io.FileOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.servlet.ServletContext;
-
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -61,9 +63,9 @@ public class ImplUserService implements IUserService {
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
-	
-	@Autowired private ServletContext context;
-	
+
+//	@Autowired
+//	private ServletContext context;
 
 	/**
 	 * Purpose: method for login the user into the system
@@ -237,13 +239,57 @@ public class ImplUserService implements IUserService {
 	public Response getProfile(String token) {
 		LOG.info(Constant.SERVICE_GET_UPLOAD_PROFILE);
 		String email = TokenUtility.parseToken(token, Constant.KEY_LOGIN).getSubject();
-		Optional<User> user =userRepository.findByEmail(email);
-		if(!user.isPresent()) {
+		Optional<User> user = userRepository.findByEmail(email);
+		if (!user.isPresent()) {
 			throw new UserException(Constant.EMAIL_NOT_FOUND);
 		}
-		String image;
-		String filePath = context.getRealPath("");
-		return null;
+//		List<String> images=new ArrayList<String>();
+//		String filePath = Constant.UPLOAD_FOLDER;
+//		File fileFolder = new File(filePath);
+//		if (fileFolder != null) {
+//			for(final File file: fileFolder.listFiles()) {
+//				if(!file.isDirectory()) {
+//					String encodeBase64 = null;
+//					try {
+//						String extension= FilenameUtils.getExtension(file.getName());
+//						FileInputStream fileInputStream  =new FileInputStream(file);
+//						byte[] bytes=new byte[(int)file.length()];
+//						fileInputStream.read(bytes);
+//						encodeBase64= Base64.getEncoder().encodeToString(bytes);
+//						images.add("data:image/"+extension+";base64,"+encodeBase64);
+//						fileInputStream.close();
+// 					} catch (Exception e) {
+//						// TODO: handle exception
+//					}
+//				}
+//			}
+//		}
+		String images="";
+		String filePath = Constant.UPLOAD_FOLDER;
+		File fileFolder = new File(filePath);
+		if (fileFolder != null) {
+			for(final File file: fileFolder.listFiles()) {
+				if(!file.isDirectory()) {
+					String encodeBase64 = null;
+					try {
+						if((Constant.UPLOAD_FOLDER+file.getName()).equals(user.get().getProfile())){
+							String extension= FilenameUtils.getExtension(file.getName());
+							FileInputStream fileInputStream  =new FileInputStream(file);
+							byte[] bytes=new byte[(int)file.length()];
+							fileInputStream.read(bytes);
+							encodeBase64= Base64.getEncoder().encodeToString(bytes);
+							images=("data:image/"+extension+";base64,"+encodeBase64);
+							fileInputStream.close();
+							break;
+						}
+						
+ 					} catch (Exception e) {
+						// TODO: handle exception
+					}
+				}
+			}
+		}
+		return new Response(200,Constant.GET_IMAGES_RESPONSE, images);
 	}
 
 	/**
@@ -259,22 +305,28 @@ public class ImplUserService implements IUserService {
 	@Override
 	public Response updateProfile(MultipartFile image, String token) throws Exception {
 		LOG.info(Constant.SERVICE_UPDATE_UPLOAD_PROFILE);
-		User user = userRepository.findByEmail(token).orElse(null);
+		String userEmail = TokenUtility.parseToken(token, Constant.KEY_LOGIN).getSubject();
+		User user = userRepository.findByEmail(userEmail).orElse(null);
 		if (user == null) {
 			LOG.info(token + Constant.EMAIL_NOT_FOUND);
 			throw new ForgotPasswordException(token + Constant.EMAIL_NOT_FOUND);
 		}
-		if (user.getProfile().isEmpty())
-			throw new UserException(Constant.IMAGE_UPDATE_FAILED);
 
 		if (image != null && image.getContentType() != null
 				&& !image.getContentType().toLowerCase().startsWith("image"))
 			throw new UserException(Constant.IMAGE_FORMAT_EXCEPTION);
-		FileOutputStream output = new FileOutputStream(Constant.UPLOAD_FOLDER + token + image.getOriginalFilename());
-		output.write(image.getBytes());
-		user.setProfile(Constant.UPLOAD_FOLDER + token + image.getOriginalFilename());
 
-		output.close();
+//		FileOutputStream output = new FileOutputStream(Constant.UPLOAD_FOLDER + token + image.getOriginalFilename());
+//		output.write(image.getBytes());
+//		user.setProfile(Constant.UPLOAD_FOLDER + token + image.getOriginalFilename());
+
+//		output.close();
+		byte[] bytes = image.getBytes();
+		String extension = image.getContentType().replace("image/", "");
+		String fileLocation = Constant.UPLOAD_FOLDER + userEmail + "." + extension;
+		Path path = Paths.get(fileLocation);
+		Files.write(path, bytes);
+		user.setProfile(fileLocation);
 		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
 	}
 
@@ -312,11 +364,8 @@ public class ImplUserService implements IUserService {
 	@Override
 	public Response getUser(String userId) {
 		// TODO Auto-generated method stub
-		int id= Integer.parseInt(TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject());
-		return new Response(200, Constant.UPLOAD_SUCCESS,
-				userRepository.findById(id));
+		int id = Integer.parseInt(TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject());
+		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.findById(id));
 	}
-
-	
 
 }

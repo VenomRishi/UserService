@@ -37,6 +37,7 @@ public class Constant {
 	public final static String CONTROLLER_LOGIN_METHOD = "login controller API";
 	public final static String CONTROLLER_FORGOT_PASSWORD_METHOD = "forgot password controller API";
 	public final static String CONTROLLER_SET_PASSWORD_METHOD = "reset password controller API";
+	public final static String CONTROLLER_UPLOAD_PROFILE = "upload profile controller API";
 
 	// user related message
 	public final static String SUCCESS_LOGIN = "login successful";
@@ -50,6 +51,7 @@ public class Constant {
 	public final static String REGISTER_EMAIL_FOUND = "not found record ith this email cannot able to create new entry with this email";
 	public final static String EMAIL_NOT_FOUND = " not found is database";
 	public final static String UPLOAD_SUCCESS = "upload pic successfull";
+	public final static String GET_IMAGES_RESPONSE = "get images response";
 	public final static String IMAGE_FORMAT_EXCEPTION = "Please upload proper image";
 	public final static String IMAGE_UPDATE_FAILED = "Please upload pic first to update pic";
 
