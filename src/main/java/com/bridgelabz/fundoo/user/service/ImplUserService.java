@@ -18,9 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
@@ -334,19 +332,20 @@ public class ImplUserService implements IUserService {
 	 * Purpose: this method is used to delete profile picture from the user profile
 	 * picture
 	 * 
-	 * @param email this parameter helps to specify on which user needs to set the
+	 * @param token this parameter helps to specify on which user needs to set the
 	 *              profile picture
 	 * 
 	 * @return returns Response which contains the response of the method
 	 * @throws IOException
 	 */
 	@Override
-	public Response deleteProfile(String email) throws IOException {
-		LOG.info(Constant.SERVICE_UPDATE_UPLOAD_PROFILE);
+	public Response deleteProfile(String token) throws IOException {
+		LOG.info(Constant.SERVICE_DELETE_UPLOAD_PROFILE);
+		String email=TokenUtility.parseToken(token, Constant.KEY_LOGIN).getSubject();
 		User user = userRepository.findByEmail(email).orElse(null);
 		if (user == null) {
 			LOG.info(email + Constant.EMAIL_NOT_FOUND);
-			throw new ForgotPasswordException(email + Constant.EMAIL_NOT_FOUND);
+			throw new UserException(email + Constant.EMAIL_NOT_FOUND);
 		}
 		Path path = Paths.get(user.getProfile());
 		Files.delete(path);
@@ -356,7 +355,6 @@ public class ImplUserService implements IUserService {
 
 	@Override
 	public Response getAllUsers() {
-
 		return new Response(200, Constant.UPLOAD_SUCCESS,
 				userRepository.findAll().stream().collect(Collectors.toList()));
 	}

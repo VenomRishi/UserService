@@ -30,6 +30,7 @@ public class Constant {
 	public final static String SERVICE_SET_PASSWORD_METHOD = "method: set password service";
 	public final static String SERVICE_UPLOAD_PROFILE = "method: upload profile pic";
 	public final static String SERVICE_UPDATE_UPLOAD_PROFILE = "method: update upload profile pic";
+	public final static String SERVICE_DELETE_UPLOAD_PROFILE = "method: delete upload profile pic";
 	public final static String SERVICE_GET_UPLOAD_PROFILE = "method: get upload profile pic";
 
 	public final static String CONTROLLER_REGISTER_METHOD = "register controller API";
