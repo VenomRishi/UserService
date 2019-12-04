@@ -55,6 +55,7 @@ public class Constant {
 	public final static String GET_IMAGES_RESPONSE = "get images response";
 	public final static String IMAGE_FORMAT_EXCEPTION = "Please upload proper image";
 	public final static String IMAGE_UPDATE_FAILED = "Please upload pic first to update pic";
+	public final static String GET_USER = "User details";
 
 	// token key
 	public final static String KEY_LOGIN = "loginkey";

@@ -215,6 +215,7 @@ public class UserController {
 	 * @return ResponseEntity which is holding the String and HttpStatus in that
 	 *         entity
 	 */
+	
 	@GetMapping("/getuser")
 	public ResponseEntity<Response> getUser(@RequestHeader(name = "userIdToken") String userId) {
 		return new ResponseEntity<Response>(service.getUser(userId), HttpStatus.OK);

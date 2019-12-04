@@ -275,19 +275,19 @@ public class ImplUserService implements IUserService {
 	 * 
 	 * @param image this is MultipartFile coming from the user end
 	 * 
-	 * @param token this parameter helps to specify on which user needs to set the
+	 * @param userId this parameter helps to specify on which user needs to set the
 	 *              profile picture
 	 * 
 	 * @return returns Response which contains the response of the method
 	 */
 	@Override
-	public Response updateProfile(MultipartFile image, String token) throws Exception {
+	public Response updateProfile(MultipartFile image, String userId) throws Exception {
 		LOG.info(Constant.SERVICE_UPDATE_UPLOAD_PROFILE);
-		String userEmail = TokenUtility.parseToken(token, Constant.KEY_LOGIN).getSubject();
+		String userEmail = TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject();
 		User user = userRepository.findByEmail(userEmail).orElse(null);
 		if (user == null) {
-			LOG.info(token + Constant.EMAIL_NOT_FOUND);
-			throw new ForgotPasswordException(token + Constant.EMAIL_NOT_FOUND);
+			LOG.info(userId + Constant.EMAIL_NOT_FOUND);
+			throw new ForgotPasswordException(userId + Constant.EMAIL_NOT_FOUND);
 		}
 
 		if (image != null && image.getContentType() != null
@@ -307,16 +307,16 @@ public class ImplUserService implements IUserService {
 	 * Purpose: this method is used to delete profile picture from the user profile
 	 * picture
 	 * 
-	 * @param token this parameter helps to specify on which user needs to set the
+	 * @param userId this parameter helps to specify on which user needs to set the
 	 *              profile picture
 	 * 
 	 * @return returns Response which contains the response of the method
 	 * @throws IOException
 	 */
 	@Override
-	public Response deleteProfile(String token) throws IOException {
+	public Response deleteProfile(String userId) throws IOException {
 		LOG.info(Constant.SERVICE_DELETE_UPLOAD_PROFILE);
-		String email=TokenUtility.parseToken(token, Constant.KEY_LOGIN).getSubject();
+		String email=TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject();
 		User user = userRepository.findByEmail(email).orElse(null);
 		if (user == null) {
 			LOG.info(email + Constant.EMAIL_NOT_FOUND);
@@ -327,7 +327,7 @@ public class ImplUserService implements IUserService {
 		user.setProfile(null);
 		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
 	}
-
+	
 	@Override
 	public Response getAllUsers() {
 		return new Response(200, Constant.UPLOAD_SUCCESS,
@@ -338,7 +338,7 @@ public class ImplUserService implements IUserService {
 	public Response getUser(String userId) {
 		// TODO Auto-generated method stub
 		int id = Integer.parseInt(TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject());
-		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.findById(id));
+		return new Response(200, Constant.GET_USER, userRepository.findById(id).get());
 	}
 
 }
