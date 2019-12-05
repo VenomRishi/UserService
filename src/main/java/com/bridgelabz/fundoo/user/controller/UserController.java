@@ -38,6 +38,7 @@ import com.bridgelabz.fundoo.user.dto.SetPasswordDTO;
 import com.bridgelabz.fundoo.user.response.Response;
 import com.bridgelabz.fundoo.user.service.IUserService;
 import com.bridgelabz.fundoo.user.utility.Constant;
+import com.bridgelabz.fundoo.user.utility.TokenUtility;
 
 @RestController
 @RequestMapping("/user")
@@ -85,7 +86,10 @@ public class UserController {
 	@PutMapping("/verify")
 	public ResponseEntity<Response> verify(@RequestHeader String token) {
 		LOG.info(Constant.CONTROLLER_VERIFY_REGISTER_METHOD);
-		return new ResponseEntity<>(service.verify(token), HttpStatus.OK);
+		return new ResponseEntity<>(
+				new Response(200, Constant.SUCCESS_VERIFY,
+						service.verify(TokenUtility.parseToken(token, Constant.KEY_LOGIN).getSubject())),
+				HttpStatus.OK);
 	}
 
 	/**
@@ -147,7 +151,10 @@ public class UserController {
 	public ResponseEntity<Response> setPassword(@RequestHeader(name = "token") String token,
 			@RequestBody SetPasswordDTO setPasswordDTO) {
 		LOG.info(Constant.CONTROLLER_SET_PASSWORD_METHOD);
-		return new ResponseEntity<>(service.setPassword(token, setPasswordDTO), HttpStatus.OK);
+		return new ResponseEntity<>(
+				new Response(200, Constant.SUCCESS_SET_PASSWORD, service.setPassword(
+						(TokenUtility.parseToken(token, Constant.KEY_LOGIN).getSubject()), setPasswordDTO)),
+				HttpStatus.OK);
 	}
 
 	@GetMapping("/getprofile")
@@ -160,10 +167,10 @@ public class UserController {
 	 * upload image for the profile picture of the user and this will store image
 	 * into the path and maintain the location into database
 	 * 
-	 * @param image this is MultipartFile coming from the user end
+	 * @param image  this is MultipartFile coming from the user end
 	 * 
-	 * @param token this parameter helps to specify on which user needs to set the
-	 *              profile picture
+	 * @param userId this parameter helps to specify on which user needs to set the
+	 *               profile picture
 	 * 
 	 * @return ResponseEntity which is holding the String and HttpStatus in that
 	 *         entity
@@ -171,10 +178,13 @@ public class UserController {
 	 */
 	@PutMapping("/updateprofile")
 	public ResponseEntity<Response> updateProfile(@RequestParam(name = "file") MultipartFile image,
-			@RequestHeader(name = "userEmailToken") String token) throws Exception {
+			@RequestHeader(name = "userEmailToken") String userId) throws Exception {
 		LOG.info(Constant.CONTROLLER_UPLOAD_PROFILE);
-		System.out.println(image+ " "+ token);
-		return new ResponseEntity<Response>(service.updateProfile(image, token), HttpStatus.OK);
+		System.out.println("hey");
+		return new ResponseEntity<Response>(
+				new Response(200, Constant.UPLOAD_SUCCESS,
+						service.updateProfile(image, TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject())),
+				HttpStatus.OK);
 	}
 
 	/**
@@ -182,15 +192,19 @@ public class UserController {
 	 * image for the profile picture of the user and this will store image into the
 	 * path and maintain the location into database
 	 * 
-	 * @param token this parameter helps to specify on which user needs to set the
-	 *              profile picture
+	 * @param userId this parameter helps to specify on which user needs to set the
+	 *               profile picture
 	 * @return ResponseEntity which is holding the String and HttpStatus in that
 	 *         entity
 	 * @throws IOException handles the IOException
 	 */
 	@PutMapping("/deleteprofile")
-	public ResponseEntity<Response> deleteProfile(@RequestHeader(name = "userEmailToken") String token) throws IOException {
-		return new ResponseEntity<Response>(service.deleteProfile(token), HttpStatus.OK);
+	public ResponseEntity<Response> deleteProfile(@RequestHeader(name = "userEmailToken") String userId)
+			throws IOException {
+		return new ResponseEntity<Response>(
+				new Response(200, Constant.DELETE_PROFILE_SUCCESS,
+						service.deleteProfile(TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject())),
+				HttpStatus.OK);
 	}
 
 	/**
@@ -215,10 +229,13 @@ public class UserController {
 	 * @return ResponseEntity which is holding the String and HttpStatus in that
 	 *         entity
 	 */
-	
+
 	@GetMapping("/getuser")
-	public ResponseEntity<Response> getUser(@RequestHeader(name = "userIdToken") String userId) {
-		return new ResponseEntity<Response>(service.getUser(userId), HttpStatus.OK);
+	public ResponseEntity<Response> getUser(@RequestHeader(name = "userEmailToken") String userId) {
+		return new ResponseEntity<Response>(
+				new Response(200, Constant.GET_USER,
+						service.getUser(TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject())),
+				HttpStatus.OK);
 	}
 
 }

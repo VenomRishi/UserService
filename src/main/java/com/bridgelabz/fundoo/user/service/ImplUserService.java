@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.fundoo.user.configuration.UserConfiguration;
@@ -45,8 +47,6 @@ import com.bridgelabz.fundoo.user.response.Response;
 import com.bridgelabz.fundoo.user.response.UserToken;
 import com.bridgelabz.fundoo.user.utility.Constant;
 import com.bridgelabz.fundoo.user.utility.TokenUtility;
-
-import io.jsonwebtoken.Claims;
 
 @Service
 public class ImplUserService implements IUserService {
@@ -150,17 +150,16 @@ public class ImplUserService implements IUserService {
 	 * there application then user can easy login with there email account with the
 	 * password along with it
 	 * 
-	 * @param token this is token coming from the mail which is send while
+	 * @param userId this is token coming from the mail which is send while
 	 *              registration to user mail account in that mail token is
 	 *              available
-	 * @return returns Response which contains the response of the method
+	 * @return returns user entity
 	 */
+	@CachePut(value = "user", key = "#userId")
 	@Override
-	public Response verify(String token) {
+	public User verify(String userId) {
 		LOG.info(Constant.SERVICE_VERIFY_USER_METHOD);
-
-		Claims claims = TokenUtility.parseToken(token, Constant.KEY_REGISTER_VERIFY);
-		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
+		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(userId)).findAny()
 				.orElse(null);
 		if (user == null) {
 			LOG.error(Constant.FAILED_TO_VERIFY);
@@ -169,7 +168,7 @@ public class ImplUserService implements IUserService {
 
 		user.setActive(true);
 		LOG.info(Constant.SUCCESS_VERIFY);
-		return new Response(200, Constant.SUCCESS_VERIFY, userRepository.save(user));
+		return userRepository.save(user);
 
 	}
 
@@ -211,15 +210,15 @@ public class ImplUserService implements IUserService {
 	 * 
 	 * @param setPasswordDTO input from user
 	 * 
-	 * @return returns Response which contains the response of the method
+	 * @return returns user entity
 	 */
+	@CachePut(value = "user", key = "#userId")
 	@Override
-	public Response setPassword(String token, SetPasswordDTO setPasswordDTO) {
+	public User setPassword(String userId, SetPasswordDTO setPasswordDTO) {
 		LOG.info(Constant.SERVICE_SET_PASSWORD_METHOD);
 
-		Claims claims = TokenUtility.parseToken(token, Constant.KEY_SET_PASSWORD);
-		LOG.info(claims.getSubject());
-		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(claims.getSubject())).findAny()
+		
+		User user = userRepository.findAll().stream().filter(i -> i.getEmail().equals(userId)).findAny()
 				.orElse(null);
 		if (user == null) {
 
@@ -229,7 +228,7 @@ public class ImplUserService implements IUserService {
 		}
 		user.setPassword(config.passwordEncoder().encode(setPasswordDTO.getPassword()));
 		LOG.info(Constant.SUCCESS_SET_PASSWORD);
-		return new Response(200, Constant.SUCCESS_SET_PASSWORD, userRepository.save(user));
+		return userRepository.save(user);
 
 	}
 
@@ -278,13 +277,13 @@ public class ImplUserService implements IUserService {
 	 * @param userId this parameter helps to specify on which user needs to set the
 	 *              profile picture
 	 * 
-	 * @return returns Response which contains the response of the method
+	 * @return returns user entity
 	 */
+	@CachePut(value = "user", key = "#userId")
 	@Override
-	public Response updateProfile(MultipartFile image, String userId) throws Exception {
+	public User updateProfile(MultipartFile image, String userId) throws Exception {
 		LOG.info(Constant.SERVICE_UPDATE_UPLOAD_PROFILE);
-		String userEmail = TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject();
-		User user = userRepository.findByEmail(userEmail).orElse(null);
+		User user = userRepository.findByEmail(userId).orElse(null);
 		if (user == null) {
 			LOG.info(userId + Constant.EMAIL_NOT_FOUND);
 			throw new ForgotPasswordException(userId + Constant.EMAIL_NOT_FOUND);
@@ -296,11 +295,11 @@ public class ImplUserService implements IUserService {
 
 		byte[] bytes = image.getBytes();
 		String extension = image.getContentType().replace("image/", "");
-		String fileLocation = Constant.UPLOAD_FOLDER + userEmail + "." + extension;
+		String fileLocation = Constant.UPLOAD_FOLDER + userId + "." + extension;
 		Path path = Paths.get(fileLocation);
 		Files.write(path, bytes);
 		user.setProfile(fileLocation);
-		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
+		return userRepository.save(user);
 	}
 
 	/**
@@ -310,22 +309,22 @@ public class ImplUserService implements IUserService {
 	 * @param userId this parameter helps to specify on which user needs to set the
 	 *              profile picture
 	 * 
-	 * @return returns Response which contains the response of the method
+	 * @return returns user entity
 	 * @throws IOException
 	 */
+	@CachePut(value = "user", key = "#userId")
 	@Override
-	public Response deleteProfile(String userId) throws IOException {
+	public User deleteProfile(String userId) throws IOException {
 		LOG.info(Constant.SERVICE_DELETE_UPLOAD_PROFILE);
-		String email=TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject();
-		User user = userRepository.findByEmail(email).orElse(null);
+		User user = userRepository.findByEmail(userId).orElse(null);
 		if (user == null) {
-			LOG.info(email + Constant.EMAIL_NOT_FOUND);
-			throw new UserException(email + Constant.EMAIL_NOT_FOUND);
+			LOG.info(userId + Constant.EMAIL_NOT_FOUND);
+			throw new UserException(userId + Constant.EMAIL_NOT_FOUND);
 		}
 		Path path = Paths.get(user.getProfile());
 		Files.delete(path);
 		user.setProfile(null);
-		return new Response(200, Constant.UPLOAD_SUCCESS, userRepository.save(user));
+		return userRepository.save(user);
 	}
 	
 	@Override
@@ -333,12 +332,12 @@ public class ImplUserService implements IUserService {
 		return new Response(200, Constant.UPLOAD_SUCCESS,
 				userRepository.findAll().stream().collect(Collectors.toList()));
 	}
-
+	
+	@Cacheable(value = "user", key = "#userId")
 	@Override
-	public Response getUser(String userId) {
-		// TODO Auto-generated method stub
-		int id = Integer.parseInt(TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject());
-		return new Response(200, Constant.GET_USER, userRepository.findById(id).get());
+	public User getUser(String userId) {
+		System.out.println("In method");
+		return userRepository.findByEmail(userId).get();
 	}
 
 }

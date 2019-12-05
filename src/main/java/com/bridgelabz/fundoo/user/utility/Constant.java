@@ -52,6 +52,7 @@ public class Constant {
 	public final static String REGISTER_EMAIL_FOUND = "not found record ith this email cannot able to create new entry with this email";
 	public final static String EMAIL_NOT_FOUND = " not found is database";
 	public final static String UPLOAD_SUCCESS = "upload pic successfull";
+	public final static String DELETE_PROFILE_SUCCESS = "delete profile pic successfull";
 	public final static String GET_IMAGES_RESPONSE = "get images response";
 	public final static String IMAGE_FORMAT_EXCEPTION = "Please upload proper image";
 	public final static String IMAGE_UPDATE_FAILED = "Please upload pic first to update pic";

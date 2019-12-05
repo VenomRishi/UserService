@@ -1,0 +1,18 @@
+https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-18-04
+https://www.journaldev.com/18141/spring-boot-redis-cache
+
+sudo apt update
+sudo apt install redis-server
+sudo nano /etc/redis/redis.conf
+sudo systemctl status redis
+sudo systemctl start redis
+sudo systemctl enable redis
+sudo systemctl disable redis
+sudo systemctl restart redis.service
+
+
+redis-cli
+
+sudo nano /etc/redis/redis.conf
+
+for cofiguration

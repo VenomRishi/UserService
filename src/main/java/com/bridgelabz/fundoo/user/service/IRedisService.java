@@ -1,8 +1,10 @@
 package com.bridgelabz.fundoo.user.service;
 
+import com.bridgelabz.fundoo.user.entity.User;
+
 public interface IRedisService {
 
-	void cacheAble(int id);
+	User cacheable(int id);
 	
-	void cachePut(int id);
+	User cacheput(int id, User user);
 }

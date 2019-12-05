@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.RegisterDTO;
 import com.bridgelabz.fundoo.user.dto.SetPasswordDTO;
+import com.bridgelabz.fundoo.user.entity.User;
 import com.bridgelabz.fundoo.user.response.Response;
 
 public interface IUserService {
@@ -64,7 +65,7 @@ public interface IUserService {
 	 *              available
 	 * @return returns Response which contains the response of the method
 	 */
-	Response verify(String token);
+	User verify(String token);
 
 	/**
 	 * Purpose: method is created for the sending the set password link on email if
@@ -83,7 +84,7 @@ public interface IUserService {
 	 * 
 	 * @return returns Response which contains the response of the method
 	 */
-	Response setPassword(String token, SetPasswordDTO setPasswordDTO);
+	User setPassword(String userId, SetPasswordDTO setPasswordDTO);
 
 	/**
 	 * Purpose: this method is used to get uploaded user profile picture
@@ -105,7 +106,7 @@ public interface IUserService {
 	 * 
 	 * @return returns Response which contains the response of the method
 	 */
-	Response updateProfile(MultipartFile image, String email) throws Exception;
+	User updateProfile(MultipartFile image, String email) throws Exception;
 
 	/**
 	 * Purpose: this method is used to delete profile picture from the user profile
@@ -117,7 +118,7 @@ public interface IUserService {
 	 * @return returns Response which contains the response of the method
 	 * @throws IOException
 	 */
-	Response deleteProfile(String email) throws IOException;
+	User deleteProfile(String email) throws IOException;
 
 	Response getAllUsers();
 
@@ -129,6 +130,6 @@ public interface IUserService {
 	 * 
 	 * @return returns the user object back to response
 	 */
-	Response getUser(String userId);
+	User getUser(String userId);
 
 }
