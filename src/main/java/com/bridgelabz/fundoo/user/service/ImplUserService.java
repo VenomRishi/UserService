@@ -336,7 +336,7 @@ public class ImplUserService implements IUserService {
 	@Cacheable(value = "user", key = "#userId")
 	@Override
 	public User getUser(String userId) {
-		System.out.println("In method");
+		System.out.println("In method"+userId);
 		return userRepository.findByEmail(userId).get();
 	}
 

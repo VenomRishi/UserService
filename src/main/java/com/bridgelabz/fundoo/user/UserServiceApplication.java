@@ -20,18 +20,6 @@ import org.springframework.cache.annotation.EnableCaching;
 @EnableCaching
 public class UserServiceApplication {
 
-//	@Bean
-//	JedisConnectionFactory jedisConnectionFactory() {
-//		return new JedisConnectionFactory();
-//	}
-//
-//	@Bean
-//	RedisTemplate<String, User> redisTemplate() {
-//		RedisTemplate<String, User> redisTemplate = new RedisTemplate<>();
-//		redisTemplate.setConnectionFactory(jedisConnectionFactory());
-//		return redisTemplate;
-//	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(UserServiceApplication.class, args);
 	}

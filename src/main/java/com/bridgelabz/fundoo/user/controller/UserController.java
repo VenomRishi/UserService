@@ -232,6 +232,7 @@ public class UserController {
 
 	@GetMapping("/getuser")
 	public ResponseEntity<Response> getUser(@RequestHeader(name = "userEmailToken") String userId) {
+		System.out.println("Get user");
 		return new ResponseEntity<Response>(
 				new Response(200, Constant.GET_USER,
 						service.getUser(TokenUtility.parseToken(userId, Constant.KEY_LOGIN).getSubject())),
