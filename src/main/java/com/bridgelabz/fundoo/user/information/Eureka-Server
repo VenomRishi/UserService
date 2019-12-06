@@ -1,0 +1,23 @@
+MicroService implementation
+You need to setup the Discovery Server who is the Eureka Server
+
+for this You need to create project with dependency of netflix-eureka-server
+
+and in main class add annotation @enableEurekaServer
+
+in application.properties 
+server.port=8761
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+
+and then configure clients
+
+add 
+<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+    <version>2.2.0.RELEASE</version>
+</dependency>
+
+add spring cloud version
